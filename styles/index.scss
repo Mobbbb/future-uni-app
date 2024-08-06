@@ -1,0 +1,101 @@
+$base-background-color: #f5f6f7;
+
+$button-active-text: #d9d9d9;
+
+$button-primary: #409eff;
+$disabled-button-primary: rgba(0, 122, 255, 0.6);
+
+$red-color: #eb4436;
+$active-red-color: #a82f26;
+$disabled-red-color: #eb7272;
+$green-color: #21a67a;
+$active-green-color: #19825f;
+$disabled-green-color: #3aa67e;
+
+
+html, body {
+    width: 100%;
+    height: 100%;
+}
+body {
+    margin: 0;
+    /* prevent pull-to-refresh for Chrome 63+ */
+    overscroll-behavior-y: none;
+}
+
+page {
+	background-color: #fff;
+	overflow-y: scroll;
+}
+
+button[type='buy'] {
+	color: white;
+	background-color: $red-color;
+}
+button[type='buy']:active {
+	color: $button-active-text;
+	background-color: $active-red-color;
+}
+button[type='buy'][disabled] {
+	background-color: $disabled-red-color;
+}
+button[type='buy'][disabled]:active {
+	background-color: $disabled-red-color;
+}
+.button-hover[type='buy'] {
+	color: $button-active-text;
+	background-color: $active-red-color;
+}
+
+button[type='sale'] {
+	color: white;
+	background-color: $green-color;
+}
+button[type='sale']:active {
+	color: $button-active-text;
+	background-color: $active-green-color;
+}
+button[type='sale'][disabled] {
+	background-color: $disabled-green-color;
+}
+button[type='sale'][disabled]:active {
+	background-color: $disabled-green-color;
+}
+.button-hover[type='sale'] {
+	color: $button-active-text;
+	background-color: $active-green-color;
+}
+
+button[disabled][type='primary'] {
+	background-color: $disabled-button-primary;
+}
+
+::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+    background-color: $base-background-color;
+}
+
+::-webkit-scrollbar-track {
+    -webkit-box-shadow: inset 0 0 6px $base-background-color;
+    border-radius: 10px;
+    background-color: $base-background-color;
+}
+
+::-webkit-scrollbar-thumb {
+    border-radius: 10px;
+    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.1);
+    background-color: rgba(255, 255, 255, 0.5)
+}
+
+.table-fixed .uni-table-td:nth-of-type(1), .table-fixed .uni-table-th:nth-of-type(1) {
+	position: sticky;
+	z-index: 1;
+	background-color: #ffffff;
+}
+.table-fixed.left .uni-table-td:nth-of-type(1), .table-fixed.left .uni-table-th:nth-of-type(1) {
+	left: 0;
+}
+.table-fixed.right .uni-table-td:nth-of-type(1), .table-fixed.right .uni-table-th:nth-of-type(1) {
+	right: 0;
+}

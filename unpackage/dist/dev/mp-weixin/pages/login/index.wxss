@@ -1,0 +1,17 @@
+
+.login-wrap.data-v-d08ef7d4 {
+	padding-top: 12px;
+}
+.input-item-wrap.data-v-d08ef7d4 {
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+}
+.login-tips-wrap.data-v-d08ef7d4 {
+    margin-bottom: 12px;
+    color: #bbb;
+    font-size: 12px;
+}
+text.data-v-d08ef7d4 {
+	flex-shrink: 0;
+}
