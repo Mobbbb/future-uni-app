@@ -1,0 +1,1 @@
+<view class="mine-wrap data-v-edba543d"><uni-card wx:if="{{a}}" class="data-v-edba543d" u-s="{{['d']}}" u-i="edba543d-0" bind:__l="__l" u-p="{{a}}"><text class="data-v-edba543d">这里是交易记录页面，功能开发中，暂未开放......</text></uni-card></view>
