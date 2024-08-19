@@ -1,103 +1,190 @@
-export const getAppendBlock = (num, lineMaxNum) => {
-    if (num % lineMaxNum) {
-        return lineMaxNum - num % lineMaxNum
-    }
-    return 0
+import { dateFormat, dateGap, calculateDate } from './umob.js'
+
+export const genVH = (length) => {
+    let clientHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+    if (!clientHeight) return length
+    return length * clientHeight / 800
 }
 
-export const getCacheList = async () => {
-    const obj = {}
-    if ('caches' in window) {
-        const cachesKeys = await caches.keys()
-        if (cachesKeys.includes('dc-model')) {
-            const dcModelCache = await caches.open('dc-model')
-            const cachedRequests = await dcModelCache.keys()
-            cachedRequests.forEach(request => {
-                if (request.url.indexOf('character.dat') > -1) {
-                    const urlArr = request.url.split('/')
-                    const modelName = urlArr[urlArr.length - 2] || ''
-                    const childName = modelName.split('_')[0] || ''
-                    if (childName) {
-                        obj[childName] = 1
-                    }
-                }
-            })
+export function circleDom(color, size, left = 0, right = 4) {
+    return `<span style="display: inline-block; width: ${size}px; height: ${size}px; border-radius: 50%; background: ${color}; margin: 0 ${right}px 2px ${left}px;vertical-align: middle;"></span>`
+}
+
+export const parseDateParams = (dateParams) => {
+    const params = {}
+    if (dateParams[0]) {
+        let prevDay = Date.parse(new Date(dateParams[0])) - 24 * 60 * 60 * 1000
+        if (new Date(prevDay).getDay() === 0) { // 前一天是周日
+            prevDay -= 2 * 24 * 60 * 60 * 1000
         }
-    }
-    return obj
-}
-
-export function dateFormat(date, fmt = 'yyyy-MM-dd') {
-    if (!(date instanceof Date)) {
-        date = new Date(date)
-    }
-    var a = ['日', '一', '二', '三', '四', '五', '六']
-    var o = {
-        'M+': date.getMonth() + 1, // 月份
-        'd+': date.getDate(), // 日
-        'h+': date.getHours(), // 小时
-        'm+': date.getMinutes(), // 分
-        's+': date.getSeconds(), // 秒
-        'q+': Math.floor((date.getMonth() + 3) / 3), // 季度
-        'S': date.getMilliseconds(), // 毫秒
-        'w': date.getDay(), // 周
-        'W': a[date.getDay()], // 大写周
-        'T': 'T'
-    }
-    if (/(y+)/.test(fmt)) { fmt = fmt.replace(RegExp.$1, (date.getFullYear() + '').substr(4 - RegExp.$1.length)) }
-    for (var k in o) {
-        if (new RegExp('(' + k + ')').test(fmt)) { fmt = fmt.replace(RegExp.$1, (RegExp.$1.length === 1) ? (o[k]) : (('00' + o[k]).substr(('' + o[k]).length))) }
-    }
-    return fmt
-}
-
-export function isPWA() {
-    return navigator.standalone === true || !!(window.matchMedia('(display-mode: standalone)').matches)
-}
-
-export function debounce(fn, argWait, immediate) {
-    if (immediate === void 0) { immediate = true; }
-    var wait = Number(argWait) || 0;
-    var timestampProvider = typeof performance === 'object' ? performance : Date;
-    var timeout;
-    var args;
-    var context;
-    var timestamp;
-    var result;
-    var later = function () {
-        var last = timestampProvider.now() - timestamp;
-        // 每次调用都会更新timestamp的值，如果时间间隔没有超过wait，那么启用新的定时器
-        if (last < wait && last >= 0) {
-            timeout = setTimeout(later, wait - last);
+        if (new Date(prevDay).getDay() === 6) { // 前一天是周六
+            prevDay -= 1 * 24 * 60 * 60 * 1000
         }
-        else {
-            timeout = null;
-            if (!immediate) {
-                result = fn.apply(context, args);
-                if (!timeout) {
-                    context = null;
-                    args = null;
-                }
+        params.startDate = dateFormat(prevDay) + ' 20:55:00'
+    }
+    if (dateParams[1]) {
+        let endDay = Date.parse(new Date(dateParams[1]))
+        
+        if (dateParams[0] === dateParams[1]) {
+            if (new Date(endDay).getDay() === 0) { // 周日
+                endDay += 1 * 24 * 60 * 60 * 1000
+            } else if (new Date(endDay).getDay() === 6) { // 周六
+                endDay += 2 * 24 * 60 * 60 * 1000
             }
         }
-    };
-    return function () {
-        var restArgs = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            restArgs[_i] = arguments[_i];
+
+        params.endDate = dateFormat(endDay) + ' 20:54:59'
+    }
+    return params
+}
+
+export const getGapDate = (gap = 1) => {
+    const end = new Date()
+    const start = new Date()
+
+    let deltaDay = 0
+    if (end.getHours() >= 21) { // 9点之后，区间往后延一天
+        deltaDay ++
+        end.setTime(end.getTime() + 3600 * 1000 * 24 * 1)
+    }
+    if (new Date(end).getDay() === 0) { // 明天是周日
+        deltaDay ++
+        end.setTime(end.getTime() + 3600 * 1000 * 24 * 1)
+    } else if (new Date(end).getDay() === 6) { // 明天是周六
+        deltaDay = deltaDay + 2
+        end.setTime(end.getTime() + 3600 * 1000 * 24 * 2)
+    }
+
+    start.setTime(start.getTime() - 3600 * 1000 * 24 * (gap - deltaDay - 1))
+    return [start, end]
+}
+
+/**
+ * @description 获取归属的交易日期
+ * @param {String} time yyyy-MM-dd hh:mm:ss 实际交易日期
+ * @returns date yyyy-MM-dd 归属日期
+ */
+export const getBelongDealDate = (time) => {
+    const date = new Date(time)
+    const hours = Number(time.slice(11, 13))
+
+    if (hours >= 21) { // 9点之后，区间往后延一天
+        date.setTime(date.getTime() + 3600 * 1000 * 24 * 1)
+    }
+    if (new Date(date).getDay() === 0) { // 明天是周日
+        date.setTime(date.getTime() + 3600 * 1000 * 24 * 1)
+    } else if (new Date(date).getDay() === 6) { // 明天是周六
+        date.setTime(date.getTime() + 3600 * 1000 * 24 * 2)
+    }
+
+    return dateFormat(date)
+}
+
+export const getBelongDealDateD = (time) => {
+    const date = time
+    const hours = time.getHours()
+
+    if (hours >= 21) { // 9点之后，区间往后延一天
+        date.setTime(date.getTime() + 3600 * 1000 * 24 * 1)
+    }
+    if (new Date(date).getDay() === 0) { // 明天是周日
+        date.setTime(date.getTime() + 3600 * 1000 * 24 * 1)
+    } else if (new Date(date).getDay() === 6) { // 明天是周六
+        date.setTime(date.getTime() + 3600 * 1000 * 24 * 2)
+    }
+
+    return date
+}
+
+/**
+ * @description 获取归属的交易日期区间
+ * @param {String} time yyyy-MM-dd hh:mm:ss
+ * @returns {Array} yyyy-MM-dd
+ */
+export const getBelongDealDateGap = (time) => {
+    const date = new Date(time)
+    const hours = Number(time.slice(11, 13))
+    const strDate = time.slice(0, 10)
+
+    if (hours >= 21) { // 9点之后，区间往后延一天
+        date.setTime(date.getTime() + 3600 * 1000 * 24 * 1)
+
+        if (new Date(date).getDay() === 0) { // 明天是周日
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * 1)
+        } else if (new Date(date).getDay() === 6) { // 明天是周六
+            date.setTime(date.getTime() + 3600 * 1000 * 24 * 2)
         }
-        context = this;
-        args = restArgs;
-        timestamp = timestampProvider.now();
-        // 立即执行
-        var callNow = immediate && !timeout;
-        if (!timeout)
-            timeout = setTimeout(later, wait);
-        if (callNow) {
-            result = fn.apply(context, args);
-            context = null;
-            args = null;
+
+        return [`${strDate} 20:55:00`, `${dateFormat(date)} 20:54:59`]
+    } else {
+        date.setTime(date.getTime() - 3600 * 1000 * 24 * 1)
+
+        if (new Date(date).getDay() === 0) { // 前一天是周日
+            date.setTime(date.getTime() - 3600 * 1000 * 24 * 2)
+        } else if (new Date(date).getDay() === 6) { // 前一天是周六
+            date.setTime(date.getTime() - 3600 * 1000 * 24 * 1)
         }
-        return result;
-    };
+
+        return [`${dateFormat(date)} 20:55:00`, `${strDate} 20:54:59`]
+    }
+}
+
+export const getMonthShortcuts = (num = 5) => {
+    const now = dateFormat(new Date(), 'yyyy-MM')
+    return dateGap(calculateDate(now, -num + 1), now).map(item => {
+        const endDate = new Date(...item.split('-'), 0)
+        if (endDate.getDay() === 0) { // 月底是周日
+            endDate.setTime(endDate.getTime() - 3600 * 1000 * 24 * 2)
+        } else if (endDate.getDay() === 6) { // 月底是周六
+            endDate.setTime(endDate.getTime() - 3600 * 1000 * 24 * 1)
+        }
+        return {
+            text: item.split('-').join('.'),
+            value: [`${item}-01`, dateFormat(endDate)],
+        }
+    }).reverse()
+}
+
+export const getDateByStep = (date, num) => {
+    let currentDate = calculateDate(date, num)
+
+    const day = new Date(currentDate).getDay()
+    
+    if (day === 0 || day === 6) { // 跳过周末
+        currentDate = getDateByStep(currentDate, num)
+    }
+
+    return currentDate
+}
+
+export function calculatePearsonCorrelation(data1, data2) {
+    // 计算平均值函数
+    function mean(data) {
+        return data.reduce((acc, val) => acc + val, 0) / data.length
+    }
+
+    // 计算皮尔逊相关系数函数
+    function pearsonCorrelation(data1, data2) {
+        if (data1.length !== data2.length) {
+            throw "两组数据长度不相等"
+        }
+
+        const mean1 = mean(data1)
+        const mean2 = mean(data2)
+
+        let numerator = 0
+        let denominator1 = 0
+        let denominator2 = 0
+
+        for (let i = 0; i < data1.length; i++) {
+            numerator += (data1[i] - mean1) * (data2[i] - mean2)
+            denominator1 += Math.pow(data1[i] - mean1, 2)
+            denominator2 += Math.pow(data2[i] - mean2, 2)
+        }
+
+        return numerator / Math.sqrt(denominator1 * denominator2)
+    }
+
+    // 计算皮尔逊相关系数
+    return pearsonCorrelation(data1, data2)
 }

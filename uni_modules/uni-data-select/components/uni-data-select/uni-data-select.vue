@@ -6,12 +6,10 @@
 				<view class="uni-select__input-box" @click="toggleSelector">
 					<view v-if="current" class="uni-select__input-text">{{textShow}}</view>
 					<view v-else class="uni-select__input-text uni-select__input-placeholder">{{typePlaceholder}}</view>
-					<view v-if="current && clear && !disabled" @click.stop="clearVal">
-						<uni-icons type="clear" color="#c0c4cc" size="24" />
-					</view>
-					<view v-else>
-						<uni-icons :type="showSelector? 'top' : 'bottom'" size="14" color="#999" />
-					</view>
+					<!-- CUSTOMIZED size 调整 -->
+					<!-- CUSTOMIZED 移除wrap view -->
+					<uni-icons v-if="current && clear && !disabled" @click.stop="clearVal" type="clear" color="#c0c4cc" size="22" />
+					<uni-icons v-else :type="showSelector? 'top' : 'bottom'" size="14" color="#999" />
 				</view>
 				<view class="uni-select--mask" v-if="showSelector" @click="toggleSelector" />
 				<view class="uni-select__selector" :style="getOffsetByPlacement" v-if="showSelector">

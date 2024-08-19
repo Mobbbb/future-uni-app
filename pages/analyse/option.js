@@ -163,21 +163,22 @@ export const getBarOption = (data) => {
             triggerOn: 'click',
             className: 'analyse-bar-tooltip',
             formatter: function(data) {
-                const color = data[0].data[1] > 0 ? fillColor[0] : fillColor[1]
-                return `<div style="border: 1px solid #eeeeee;padding: 12px;border-radius: 4px;color: #000;display: flex;align-items: center;font-size: 14px;line-height: 14px;">
-                            ${data[0].data[0]}
+				return ''
+                // const color = data[0].data[1] > 0 ? fillColor[0] : fillColor[1]
+                // return `<div style="border: 1px solid #eeeeee;padding: 12px;border-radius: 4px;color: #000;display: flex;align-items: center;font-size: 14px;line-height: 14px;">
+                //             ${data[0].data[0]}
                             
-                            <div style="width: 11px;margin: 0 4px 0 12px;">
-                                <div style="width: 100%;height: 3px;background: ${fillColor[0]};border-radius: 3px;margin-bottom: 2px;"></div>
-                                <div style="width: 100%;height: 3px;background: ${fillColor[1]};border-radius: 3px;margin-top: 2px;"></div>
-                            </div>
-                            ${data[0].dimensionNames[1]}
-                            <span style="color: ${color};font-weight: bold;margin-left: 4px;">${Math.round(data[0].data[1])}</span>
+                //             <div style="width: 11px;margin: 0 4px 0 12px;">
+                //                 <div style="width: 100%;height: 3px;background: ${fillColor[0]};border-radius: 3px;margin-bottom: 2px;"></div>
+                //                 <div style="width: 100%;height: 3px;background: ${fillColor[1]};border-radius: 3px;margin-top: 2px;"></div>
+                //             </div>
+                //             ${data[0].dimensionNames[1]}
+                //             <span style="color: ${color};font-weight: bold;margin-left: 4px;">${Math.round(data[0].data[1])}</span>
 
-                            <div style="width: 6px;height: 6px;border-radius: 10px;background: ${fillColor[2]};margin: 0 4px 0 12px;"></div>
-                            ${data[0].dimensionNames[2]}
-                            <span style="color: ${color};font-weight: bold;margin-left: 4px;">${data[0].data[2].toFixed(2)}%</span>
-                        </div>`
+                //             <div style="width: 6px;height: 6px;border-radius: 10px;background: ${fillColor[2]};margin: 0 4px 0 12px;"></div>
+                //             ${data[0].dimensionNames[2]}
+                //             <span style="color: ${color};font-weight: bold;margin-left: 4px;">${data[0].data[2].toFixed(2)}%</span>
+                //         </div>`
             },
             position: [0, 0],
         },
@@ -249,13 +250,11 @@ export const getBarOption = (data) => {
                     formatter: '{value}%',
                     show: true,
                     // *$修改 axisTick 颜色
-                    textStyle: {
-                        color: (value) => {
-                            // *$隐藏0坐标
-                            return value !== '0' ? '#8e8e8e' : 'rgba(0, 0, 0, 0)'
-                        },
-                        fontSize,
-                    },
+					color: (value) => {
+						// *$隐藏0坐标
+						return value !== '0' ? '#8e8e8e' : 'rgba(0, 0, 0, 0)'
+					},
+					fontSize,
                 },
             }
         ],
@@ -536,102 +535,6 @@ export const getDoubleKLineOption = (params, config) => {
                 yAxisIndex: 1,
                 data: lineYAxis2,
             },
-        ]
-    }
-}
-
-export const getOrderLineOption = (data) => {
-    return {
-        tooltip: {
-            trigger: 'axis',
-            formatter: `{c}`
-        },
-        grid: {
-            top: 10,
-            bottom: 10,
-            left: 0,
-            right: 10,
-            containLabel: true,
-        },
-        xAxis: {
-            type: 'category',
-            data: data.x,
-            interval: 0,
-            axisPointer: {
-                show: true,
-                type: 'line',
-                lineStyle: {
-                    color: '#222',
-                    type: 'solid',
-                },
-            },
-            axisTick: {
-                show: false,
-            },
-            axisLine: {
-                lineStyle: {
-                    color: '#d0d0d0',
-                    width: 1,
-                },
-            },
-            axisLabel: {
-				color: '#8e8e8e',
-				fontSize: 10,
-            },
-        },
-        yAxis: {
-            type: 'value',
-            min: Math.round(Math.min(...data.y) * 0.95 / 100) * 100,
-            max: Math.ceil(Math.max(...data.y) * 1.05 / 100) * 100,
-            axisTick: {
-                show: false,
-            },
-            splitLine: {
-                show: true,
-                lineStyle: {
-                    color: '#f1f3f8',
-                    type: 'dashed',
-                },
-            },
-            axisLine: {
-                show: true,
-                lineStyle: {
-                    color: '#d0d0d0',
-                    width: 1,
-                },
-            },
-            axisPointer: {
-                show: true,
-                type: 'line',
-                lineStyle: {
-                    color: '#222',
-                    type: 'solid',
-                },
-            },
-            axisLabel: {
-                show: true,
-                // *$修改 axisTick 颜色
-				color: (value) => {
-					// *$隐藏0坐标
-					return value !== '0' ? '#8e8e8e' : 'rgba(0, 0, 0, 0)'
-				},
-				fontSize: 10,
-            },
-        },
-        series: [
-            {
-                data: data.y,
-                type: 'line',
-                itemStyle: {
-                    color: '#ef97b2',
-                },
-                label: {
-                    show: true,
-                    fontSize: 8,
-                },
-                animation: true,
-                animationDuration: 300,
-            }
         ]
     }
 }

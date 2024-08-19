@@ -1,85 +1,675 @@
+<!--交易 -> 账户分析-->
 <template>
-	<view class="mine-wrap">
-		<uni-card margin="10px 0">
-			<text>这里账户分析页面，功能开发中，暂未开放......</text>
-		</uni-card>
-	</view>
+    <view class="future-wrap">
+        <view class="analyse-content-wrap">
+            <view :style="analyseResult.totalProfit >= 0 ?
+                { background: 'linear-gradient(#fff, rgba(243, 63, 109, 0.1) 120px, #fff 120px, #fff 100%)' } :
+                { background: 'linear-gradient(#fff, rgba(17, 166, 66, 0.1) 120px, #fff 120px, #fff 100%)' }">
+                <view class="total-analyse-wrap">
+                    <view class="total-analyse-title">盈亏</view>
+                    <view class="total-analyse-value" 
+                        :style="analyseResult.totalProfit >= 0 ?
+                        { color: 'rgb(235, 68, 54)' } :
+                        { color: 'rgb(14, 157, 88)' }">
+                        {{analyseResult.totalProfit.toLocaleString()}}
+                    </view>
+                </view>
+                <uni-card class="analyse-card">
+					<view class="search-input-wrap">
+						<uni-datetime-picker type="daterange" v-model="basicDate" @change="changeBasicDate" placeholder="请选择日期" />
+					</view>
+                    <view class="card-title">交易统计<span class="card-title-date">({{displayTime}})</span></view>
+                    <view class="card-row-wrap">
+                        <view class="card-item-wrap">
+                            <view class="card-item-title">多单胜率</view>
+                            <view class="card-item-value">{{analyseResult.buyRate}}%</view>
+                        </view>
+                        <view class="card-item-wrap">
+                            <view class="card-item-title">空单胜率</view>
+                            <view class="card-item-value">{{analyseResult.saleRate}}%</view>
+                        </view>
+                        <view class="card-item-wrap">
+                            <view class="card-item-title">总胜率</view>
+                            <view class="card-item-value">{{analyseResult.totalRate}}%</view>
+                        </view>
+                    </view>
+                </uni-card>
+            </view>
+            <uni-card class="analyse-card">
+                <view class="card-title">品种盈亏及胜率<span class="card-title-date">({{displayTime}})</span></view>
+				<view id="barChart"><l-echart ref="barChart"></l-echart></view>
+            </uni-card>
+            <uni-card class="analyse-card">
+                <view class="card-title">多单统计<span class="card-title-date">({{displayTime}})</span></view>
+                <view class="card-column-wrap">
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">总盈利</view>
+                        <view class="card-item-combine-value">
+                            <view class="card-item-value" style="color: rgb(235, 68, 54);">
+                                {{analyseResult.buyProfitUp[0]}}
+                                <span class="card-item-unit">{{analyseResult.buyProfitUp[1]}}元</span>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">每手盈利</view>
+                        <view class="card-item-combine-value">
+                            <view class="card-item-value" style="color: rgb(235, 68, 54);">
+                                {{analyseResult.preBuyProfitUp}}
+                                <span class="card-item-unit">元/手</span>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+                <view class="card-column-wrap">
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">总亏损</view>
+                        <view class="card-item-combine-value">
+                            <view class="card-item-value" style="color: rgb(14, 157, 88);">
+                                {{analyseResult.buyProfitDown[0]}}
+                                <span class="card-item-unit">{{analyseResult.buyProfitDown[1]}}元</span>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">每手亏损</view>
+                        <view class="card-item-combine-value">
+                            <view class="card-item-value" style="color: rgb(14, 157, 88);">
+                                {{analyseResult.preBuyProfitDown}}
+                                <span class="card-item-unit">元/手</span>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+                <view class="card-column-wrap">
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">净盈亏</view>
+                        <view class="card-item-combine-value">
+                            <view class="card-item-value" 
+                                :style="analyseResult.buyProfit[0] >= 0 ?
+                                { color: 'rgb(235, 68, 54)' } :
+                                { color: 'rgb(14, 157, 88)' }">
+                                {{analyseResult.buyProfit[0]}}
+                                <span class="card-item-unit">{{analyseResult.buyProfit[1]}}元</span>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">每手净盈亏</view>
+                        <view class="card-item-value"
+                            :style="analyseResult.preBuyProfit >= 0 ?
+                            { color: 'rgb(235, 68, 54)' } :
+                            { color: 'rgb(14, 157, 88)' }">
+                            {{analyseResult.preBuyProfit}}
+                            <span class="card-item-unit">元/手</span>
+                        </view>
+                    </view>
+                </view>
+            </uni-card>
+            <uni-card class="analyse-card">
+                <view class="card-title">空单统计<span class="card-title-date">({{displayTime}})</span></view>
+                <view class="card-column-wrap">
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">总盈利</view>
+                        <view class="card-item-combine-value">
+                            <view class="card-item-value" style="color: rgb(235, 68, 54);">
+                                {{analyseResult.saleProfitUp[0]}}
+                                <span class="card-item-unit">{{analyseResult.saleProfitUp[1]}}元</span>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">每手盈利</view>
+                        <view class="card-item-combine-value">
+                            <view class="card-item-value" style="color: rgb(235, 68, 54);">
+                                {{analyseResult.preSaleProfitUp}}
+                                <span class="card-item-unit">元/手</span>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+                <view class="card-column-wrap">
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">总亏损</view>
+                        <view class="card-item-combine-value">
+                            <view class="card-item-value" style="color: rgb(14, 157, 88);">
+                                {{analyseResult.saleProfitDown[0]}}
+                                <span class="card-item-unit">{{analyseResult.saleProfitDown[1]}}元</span>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">每手亏损</view>
+                        <view class="card-item-combine-value">
+                            <view class="card-item-value" style="color: rgb(14, 157, 88);">
+                                {{analyseResult.preSaleProfitDown}}
+                                <span class="card-item-unit">元/手</span>
+                            </view>
+                        </view>
+                    </view>
+                </view>
+                <view class="card-column-wrap">
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">净盈亏</view>
+                        <view class="card-item-combine-value">
+                            <view class="card-item-value" 
+                                :style="analyseResult.saleProfit[0] >= 0 ?
+                                { color: 'rgb(235, 68, 54)' } :
+                                { color: 'rgb(14, 157, 88)' }">
+                                {{analyseResult.saleProfit[0]}}
+                                <span class="card-item-unit">{{analyseResult.saleProfit[1]}}元</span>
+                            </view>
+                        </view>
+                    </view>
+                    <view class="card-item-wrap">
+                        <view class="card-item-title">每手净盈亏</view>
+                        <view class="card-item-value"
+                            :style="analyseResult.preSaleProfit >= 0 ?
+                            { color: 'rgb(235, 68, 54)' } :
+                            { color: 'rgb(14, 157, 88)' }">
+                            {{analyseResult.preSaleProfit}}
+                            <span class="card-item-unit">元/手</span>
+                        </view>
+                    </view>
+                </view>
+            </uni-card>
+            <uni-card class="analyse-card">
+                <view class="analyse-calendar-header">
+                    <view class="date-picker-wrap" v-if="dayCalendarShowStatus">
+						<uni-icons type="left" color="#dcdfe6" size="26" @click="changeCalendarDate(-1)"></uni-icons>
+						<uni-datetime-picker type="month" v-model="calendarDate" @change="changeCalendarDate('')" placeholder="请选择日期" />
+						<uni-icons type="right" color="#dcdfe6" size="26" @click="changeCalendarDate(1)"></uni-icons>
+                    </view>
+                    <view class="date-picker-wrap" v-else>
+						<uni-icons type="left" color="#dcdfe6" size="26" @click="changeCalendarYear(-1)"></uni-icons>
+						<uni-datetime-picker type="year" v-model="calendarYear" @change="changeCalendarYear" placeholder="请选择日期" />
+						<uni-icons type="right" color="#dcdfe6" size="26" @click="changeCalendarYear(1)"></uni-icons>
+                    </view>
+                    <ux-switch
+						size="small"
+                        @change="changeCalendarDim"
+                        v-model="dayCalendarShowStatus"
+						active-color="#13ce66"
+                        active-text="月"
+                        inactive-text="年"
+						class="ml-12" />
+                </view>
+				
+				<ux-calendar v-if="dayCalendarShowStatus" :date="calendarInnerDate" :showMonth="false" />
+                <monthly-calendar class="analyse-monthly-calendar" v-else :year="calendarYear" @on-click="drillingMonthCalendar">
+                    <template #dateCell="{ data }">
+                        <view class="date-cell month-date-cell" :class="getCalendarCellClass(data)">
+                            <p>{{ data.label }}</p>
+                            <p>{{ formatCalendarCellData(data) }}</p>
+                        </view>
+                    </template>
+                </monthly-calendar>
+            </uni-card>
+            <uni-card class="analyse-card">
+                <view class="line-chart-filter-wrap">
+					<uni-data-select class="mr-12" v-model="dayLineFutureNameBindValue" :localdata="futuresList"  @change="changeDayLineFuture"></uni-data-select>
+					<uni-datetime-picker type="month" v-model="kLineDate" @change="changeKLineDate" placeholder="请选择日期" />
+                </view>
+				<view id="lineChart"><l-echart ref="lineChart"></l-echart></view>
+            </uni-card>
+        </view>
+    </view>
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
 import { useStore } from 'vuex'
-import { getAppendBlock, getCacheList, dateFormat } from '@/utils/index.js'
-import { baseUrl } from '@/request.api/index.js'
+import { parseDateParams, getGapDate, getMonthShortcuts } from '@/utils'
+import festivalMap, { festivalList } from '@/config/festivalMap'
+import { getBarOption, getDoubleKLineOption } from './option'
+import MonthlyCalendar from '@/components/monthly-calendar.vue'
+import { dateFormat, calculateDate, toMonth } from '@/utils/umob.js'
+import { formatPriceLineData, formatBasicData, formatCalendarData } from '@/utils/data-processing.js'
+import { fetchOrderInfoHandle } from '@/request.api/index.js'
+
+// #ifdef MP-WEIXIN
+const echarts = require('../../uni_modules/lime-echart/static/echarts.min')
+// #endif
+
+// #ifndef MP-WEIXIN
+import * as echarts from 'echarts'
+// #endif
 
 const store = new useStore()
 
+const K_LINE_DATE_KEY_NAME = computed(() => `K-LINE-DATE-${store.state.app.USER_INFO.userId}`)
+
+let barChartIns = null
+let lineChartIns = null
+const lineChart = ref()
+const barChart = ref()
+const monthShortcuts = getMonthShortcuts(4)
+const shortcuts = [
+    { text: '今日', value: () => getGapDate() },
+    { text: '近7天', value: () => getGapDate(7) },
+    { text: '近30天', value: () => getGapDate(30) },
+    { text: '近365天', value: () => getGapDate(365) },
+    ...monthShortcuts,
+    { text: '全部', value: () => getGapDate(365 * ((new Date()).getFullYear() - 2018)) },
+]
+const analyseResult = reactive({
+    buyRate: 0,
+    saleRate: 0,
+    totalRate: 0,
+    totalProfit: 0,
+    buyProfit: [],
+    buyProfitUp: [],
+    buyProfitDown: [],
+    saleProfit: [],
+    saleProfitUp: [],
+    saleProfitDown: [],
+    preBuyProfit: 0,
+    preBuyProfitUp: 0,
+    preBuyProfitDown: 0,
+    preSaleProfit: 0,
+    preSaleProfitUp: 0,
+    preSaleProfitDown: 0,
+})
+const calendarDate = ref(dateFormat(new Date()))
+const calendarYear = ref(dateFormat(new Date()))
+const basicDate = ref(monthShortcuts[0].value)
+const kLineDate = uni.getStorageSync(K_LINE_DATE_KEY_NAME.value) 
+    ? ref(uni.getStorageSync(K_LINE_DATE_KEY_NAME.value))
+    : ref(calculateDate(dateFormat(new Date(), 'yyyy-MM'), 1))
+
+const calendarLoadingStatus = ref(false)
+const dayCalendarShowStatus = ref(true)
+const barChartMaxWidth = ref(0)
+const dayLineFutureName = ref('')
+const closeFutureLists = ref([])
+const calendarDataMap = ref({})
+
+const activeOrderTab = computed(() => store.state.app.activeOrderTab)
+const enFutureNameMap = computed(() => store.getters['order/enFutureNameMap'])
+const enFutureMap = computed(() => store.getters['order/enFutureMap'])
 const isLogin = computed(() => store.getters['app/isLogin'])
-const USER_INFO = computed(() => store.state.app.USER_INFO)
-
-const avatarImg = computed(() => {
-	const { avatar } = USER_INFO.value
-	if (avatar) {
-		// #ifdef MP-WEIXIN
-		return baseUrl + avatar
-		// #endif
-		
-		// #ifndef MP-WEIXIN
-		return avatar
-		// #endif
-	}
-
-	return ''
+const futuresList = computed(() => store.getters['order/futuresList'])
+const displayTime = computed(() => dateFormat(basicDate.value[0]) + ' To ' + dateFormat(basicDate.value[1]))
+const calendarInnerDate = computed({
+    get() {
+        return dateFormat(new Date(calendarDate.value))
+    },
+    set(value) {
+        calendarDate.value = dateFormat(value)
+    },
+})
+const dayLineFutureNameBindValue = computed({
+    get() {
+        const firstFuturesItem = futuresList.value[0] || {}
+        if (!dayLineFutureName.value) {
+            dayLineFutureName.value = firstFuturesItem.name || ''
+        }
+        return dayLineFutureName.value
+    },
+    set(value) {
+        dayLineFutureName.value = value
+    },
 })
 
-const setLoginDrawerStatus = (status) => store.commit('app/setLoginDrawerStatus', status)
-const logoutAction = () => store.dispatch('app/logoutAction')
-
-const login = () => {
-	setLoginDrawerStatus(true)
+const getCloseFutureByDate = async (dateParams) => { // 所有平仓订单
+    const response = await fetchOrderInfoHandle({
+        ...dateParams,
+        openOrClose: 0,
+    })
+    return response.result
 }
 
-const logout = () => {
-	logoutAction()
+const getFutureByName = async () => { // 指定品种的全部订单
+    if (!isLogin.value) return []
+    const formatDayLineDate = toMonth(kLineDate.value)
+    const res = await fetchOrderInfoHandle({
+        name: `${dayLineFutureName.value}${formatDayLineDate.slice(2, 4)}${formatDayLineDate.slice(5, 7)}`,
+        orderBy: 'ASC',
+    })
+    return res.result || []
 }
 
+const initCalendar = async (date) => {
+    if (!isLogin.value) return
+    let dateRange = []
+    if (dayCalendarShowStatus.value) {
+        const dateParam = date && dateFormat(date) || calendarDate.value
+        const day = new Date(dateParam.slice(0, 4), dateParam.slice(5, 7), 0).getDate()
+        dateRange = [dateParam.slice(0, 8) + '01', `${dateParam.slice(0, 8)}${day}`]
+    } else {
+        const year = date || new Date(calendarYear.value).getFullYear()
+        dateRange = [`${year}-01-01`, `${year}-12-31`]
+    }
+
+    const yearMothKey = `${dateRange[1].slice(0, 7)}-status`
+    const yearKey = `${dateRange[1].slice(0, 4)}-status`
+    if (calendarDataMap.value[yearMothKey] && dayCalendarShowStatus.value) return // 如果该月份数据已获取，不再重新请求
+    if (calendarDataMap.value[yearKey] && !dayCalendarShowStatus.value) return // 如果该年份数据已获取，不再重新请求
+
+    calendarLoadingStatus.value = true
+    const params = parseDateParams(dateRange)
+    const result = await getCloseFutureByDate(params)
+    calendarLoadingStatus.value = false
+
+    formatCalendarData(result, {
+        calendarDataMap: calendarDataMap.value,
+        dayCalendarShowStatus: dayCalendarShowStatus.value,
+        yearMothKey,
+        yearKey,
+    })
+}
+
+const initDayLineChart = async () => {
+    const designatedFutureLists = await getFutureByName()
+
+    nextTick(async () => {
+        const params = formatPriceLineData(designatedFutureLists)
+        const option = getDoubleKLineOption(params, enFutureMap.value[dayLineFutureName.value])
+
+        lineChartIns = await lineChart.value.init(echarts)
+        lineChartIns.setOption(option)
+    })
+}
+
+const initBasicInfo = async () => {
+    if (!isLogin.value) return
+    const requestParams = parseDateParams(basicDate.value)
+    closeFutureLists.value = await getCloseFutureByDate(requestParams)
+
+    const params = formatBasicData(enFutureNameMap.value, closeFutureLists.value)
+
+    barChartMaxWidth.value = Object.keys(params.chFutureMap).length * 60 < 500 ?  500 : Object.keys(params.chFutureMap).length * 60
+
+    nextTick(async () => {
+        barChartIns = await barChart.value.init(echarts)
+        barChartIns.setOption(getBarOption(params.chFutureMap))
+        barChartIns.dispatchAction({
+            type: 'showTip',
+            seriesIndex: 0,
+            dataIndex: 0,
+        })
+    })
+    analyseResult.buyRate = params.buyRate
+    analyseResult.saleRate = params.saleRate
+    analyseResult.totalRate = params.totalRate
+    analyseResult.preBuyProfit = params.preBuyProfit
+    analyseResult.preBuyProfitUp = params.preBuyProfitUp
+    analyseResult.preBuyProfitDown = params.preBuyProfitDown
+    analyseResult.preSaleProfit = params.preSaleProfit
+    analyseResult.preSaleProfitUp = params.preSaleProfitUp
+    analyseResult.preSaleProfitDown = params.preSaleProfitDown
+
+    analyseResult.saleProfit = params.saleProfit
+    analyseResult.saleProfitUp = params.saleProfitUp
+    analyseResult.saleProfitDown = params.saleProfitDown
+    analyseResult.buyProfit = params.buyProfit
+    analyseResult.buyProfitUp = params.buyProfitUp
+    analyseResult.buyProfitDown = params.buyProfitDown
+    analyseResult.totalProfit = params.totalProfit
+}
+
+const changeBasicDate = () => {
+    initBasicInfo()
+}
+
+const changeKLineDate = () => {
+    uni.setStorageSync(K_LINE_DATE_KEY_NAME.value, toMonth(kLineDate.value))
+    initDayLineChart()
+}
+
+const changeDayLineFuture = () => {
+    initDayLineChart()
+}
+
+const changeCalendarDate = (num) => {
+    if (num) {
+        calendarDate.value = calculateDate(dateFormat(calendarDate.value, 'yyyy-MM'), num) + '-01'
+    }
+    
+    initCalendar()
+}
+
+const changeCalendarYear = (value) => {
+    if (typeof value === 'number') {
+        const year = new Date(calendarYear.value).getFullYear()
+        calendarYear.value = `${year + value}-01-01`
+    }
+    initCalendar()
+}
+
+const getCalendarCellClass = (data) => {
+    let itemData = calendarDataMap.value[data.day.slice(0, 7)]
+    if (dayCalendarShowStatus.value) {
+        itemData = calendarDataMap.value[data.day]
+        const cellDay = (new Date(data.day)).getDay()
+        if (cellDay === 0 || cellDay === 6) { // 周末
+            return 'weekend-day-cell'
+        }
+        if (festivalList.includes(data.day) || festivalMap[data.day] || festivalMap[data.day.slice(5, 10)]) { // 节假日
+            return 'festival-day-cell'
+        }
+        if (data.day.slice(0, 7) !== calendarDate.value.slice(0, 7)) { // 其他月份
+            return ''
+        }
+    }
+
+    if (calendarLoadingStatus.value) return ''
+
+    let className = ''
+    if (itemData) {
+        if (itemData > 0) {
+            className = 'red-calendar-cell'
+        } else {
+            className = 'green-calendar-cell'
+        }
+    } else if (dayCalendarShowStatus.value) {
+        className = 'normal-calendar-cell'
+    } else {
+        className = 'no-data-month-cell'
+    }
+    return className
+}
+
+const formatCalendarCellData = (data) => {
+    if (calendarLoadingStatus.value) return ''
+
+    let itemData = calendarDataMap.value[data.day.slice(0, 7)]
+    if (dayCalendarShowStatus.value) {
+        itemData = calendarDataMap.value[data.day]
+        const cellDay = (new Date(data.day)).getDay()
+        if (festivalList.includes(data.day) || festivalMap[data.day] || festivalMap[data.day.slice(5, 10)]) {
+            return festivalMap[data.day] || festivalMap[data.day.slice(5, 10)] || '休'
+        }
+        // 周末、其他月份
+        if (data.day.slice(0, 7) !== calendarDate.value.slice(0, 7) || cellDay === 0 || cellDay === 6) {
+            return ''
+        }
+    }
+
+    if (typeof itemData !== 'undefined') {
+        return Math.round(itemData)
+    } else {
+        return '--'
+    }
+}
+
+const changeCalendarDim = () => {
+    if (!dayCalendarShowStatus.value) { // 切换为年，立即请求数据
+        initCalendar()
+    }
+}
+
+const drillingMonthCalendar = (value) => {
+    dayCalendarShowStatus.value = true
+    calendarDate.value = value.day + '-01'
+    initCalendar()
+}
+
+const initAnalyseData = () => {
+    initBasicInfo()
+    initCalendar()
+    initDayLineChart()
+}
+
+const getDataWhileActive = () => {
+    if (isLogin.value) {
+        initAnalyseData()
+    }
+}
+
+watch(isLogin, (value) => {
+    if (value) {
+        getDataWhileActive()
+    } else {
+        closeFutureLists.value = [] // 清空数据
+        calendarDataMap.value = {} // 清空数据
+        initAnalyseData()
+    }
+})
+
+onMounted(() => {
+    getDataWhileActive()
+})
 </script>
 
-<style lang="scss">
-page {
-	background-color: $base-background-color;
-	overflow-y: scroll;
-}
-</style>
-
 <style scoped>
-.mine-wrap {
-	width: calc(100% - 48px);
-	margin: 0 24px;
-	font-size: 14px;
+.search-input-wrap {
+    color: #606266;
+    font-size: 12px;
+    box-sizing: border-box;
+    height: 42px;
+	margin-bottom: 12px;
 }
-.mine-top-wrap {
-	display: flex;
-	align-items: center;
-	padding: 12px 0 24px 0;
+.analyse-content-wrap {
+
 }
-.avatar-wrap {
-	width: 60px;
-	height: 60px;
-	border-radius: 60px;
-	background-color: #c9c9c9;
-	margin-right: 16px;
-	display: flex;
-	align-items: center;
+.analyse-calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    max-width: 500px;
 }
-.login-text {
-	font-weight: bold;
-	font-size: 20px;
+.search-item-wrap span {
+    flex-shrink: 0;
 }
-.avatar-img {
-	width: 60px;
-	height: 60px;
-	border-radius: 60px;
-	margin-right: 16px;
+.total-analyse-wrap {
+    text-align: center;
+    padding: 16px 0 4px 0;
+}
+.total-analyse-title {
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+.total-analyse-value {
+    font-size: 24px;
+    font-weight: bold;
+}
+.card-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 12px;
+}
+.card-row-wrap {
+    display: flex;
+}
+.card-column-wrap {
+    display: flex;
+    flex-direction: column;
+    float: left;
+}
+.card-item-wrap {
+    margin-right: 24px;
+    margin-bottom: 12px;
+}
+.card-column-wrap:last-child .card-item-wrap {
+    margin-right: 0;
+}
+.card-item-title {
+    font-size: 12px;
+    margin-bottom: 4px;
+    color: var(--el-text-color-regular);
+}
+.card-item-value {
+    font-size: 16px;
+    font-weight: bold;
+}
+.card-item-combine-value {
+    display: flex;
+}
+.card-item-unit {
+    font-size: 12px;
+}
+.date-picker-wrap {
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+.date-cell {
+    height: 100%;
+    font-size: 12px;
+}
+.date-cell p:first-of-type {
+    padding: 8px;
+    font-size: 16px;
+}
+.red-calendar-cell p:first-of-type, .green-calendar-cell p:first-of-type {
+    color: #222;
+}
+.red-calendar-cell {
+    background: #fae6e7;
+    color: rgb(235, 68, 54);
+    font-weight: bold;
+}
+.green-calendar-cell {
+    background: #e8f3eb;
+    color: rgb(14, 157, 88);
+    font-weight: bold;
+}
+.month-date-cell p:first-of-type {
+    font-weight: normal;
+}
+.weekend-day-cell {
+    color: #a8ade3;
+}
+.festival-day-cell p:first-of-type {
+    font-weight: bold;
+}
+.festival-day-cell p:last-of-type {
+    color: #a8ade3;
+}
+.normal-calendar-cell p:first-of-type {
+    font-weight: bold;
+}
+.no-data-month-cell {
+    color: #c0c4cc;
+}
+.card-title-date {
+    font-weight: normal;
+    font-size: 12px;
+    margin-left: 4px;
+}
+.analyse-calendar {
+    max-width: 500px;
+}
+.analyse-monthly-calendar {
+    max-width: 512px;
+}
+#barChart {
+    height: 37.5vh;
+    width: 100%;
+    background: white;
+}
+#lineChart {
+    height: 460px;
+    width: 100%;
+    max-width: 100%;
+    background: white;
+}
+.line-chart-filter-wrap {
+    display: flex;
+}
+.analyse-select {
+    width: 120px;
+    margin-right: 12px;
 }
 </style>
