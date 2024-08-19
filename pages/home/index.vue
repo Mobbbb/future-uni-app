@@ -32,8 +32,8 @@
                 <view class="order-name-label" v-for="item in recentlyFeatureNames" @click="selectOrderName(item)" :key="item">{{item}}</view>
             </view>
         </view>
-        <view class="table-fixed left">
-			<uni-table border>
+        <ux-table fixed="left" :data="openingOrderList">
+			<uni-table border emptyText="">
 				<uni-tr>
 					<uni-th prop="name" label="合约" width="70" fixed="left">合约</uni-th>
 					<uni-th prop="buyOrSale" width="60" label="多/空">多/空</uni-th>
@@ -53,7 +53,7 @@
 					<uni-td>{{ item.commission }}</uni-td>
 				</uni-tr>
 			</uni-table>
-		</view>
+		</ux-table>
 		<view class="home-chart" v-if="isLogin"><l-echart ref="chartRef"></l-echart></view>
     </view>
 </template>
@@ -93,9 +93,9 @@ const formData = reactive({
 
 const rules = reactive({
     date: { rules: [{ required: true, errorMessage: '请选择日期', trigger: 'change' }] },
-    name: { rules: [{ required: true, message: '请选择合约', trigger: 'change' }] },
+    name: { rules: [{ required: true, errorMessage: '请选择合约', trigger: 'change' }] },
     hands: { rules: [
-		{ required: true,  message: '请输入手数', trigger: 'change' },
+		{ required: true,  errorMessage: '请输入手数', trigger: 'change' },
 		{ validateFunction: function(rule, value, data, callback) {
 			if (value <= 0) {
 				callback('请输入手数')
@@ -104,7 +104,7 @@ const rules = reactive({
 		}},
 	]},
     price: { rules: [
-		{ required: true,  message: '请输入成交价', trigger: 'change' },
+		{ required: true,  errorMessage: '请输入成交价', trigger: 'change' },
 		{ validateFunction: function(rule, value, data, callback) {
 			if (value <= 0) {
 				callback('请输入成交价')

@@ -3,7 +3,7 @@ $base-background-color: #f5f6f7;
 $button-active-text: #d9d9d9;
 
 $button-primary: #409eff;
-$disabled-button-primary: rgba(0, 122, 255, 0.6);
+$disabled-button-primary: #a0cfff;
 
 $red-color: #eb4436;
 $active-red-color: #a82f26;
@@ -25,7 +25,6 @@ body {
 
 page {
 	background-color: #fff;
-	overflow-y: scroll;
 }
 
 button[type='buy'] {
@@ -66,36 +65,55 @@ button[type='sale'][disabled]:active {
 	background-color: $active-green-color;
 }
 
+button[type='primary'] {
+	background-color: $button-primary;
+}
 button[disabled][type='primary'] {
 	background-color: $disabled-button-primary;
 }
 
 ::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-    background-color: $base-background-color;
+    width: 0;
+    height: 0;
+    background-color: transparent;
 }
 
 ::-webkit-scrollbar-track {
-    -webkit-box-shadow: inset 0 0 6px $base-background-color;
-    border-radius: 10px;
-    background-color: $base-background-color;
+    background-color: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-    border-radius: 10px;
-    -webkit-box-shadow: inset 0 0 6px rgba(0,0,0,.1);
-    background-color: rgba(255, 255, 255, 0.5)
+    background-color: transparent;
 }
 
-.table-fixed .uni-table-td:nth-of-type(1), .table-fixed .uni-table-th:nth-of-type(1) {
+.alignCenter {
+	text-align: center;
+}
+
+.alignRight {
+	text-align: right;
+}
+
+.future-table .uni-table-td, .future-table .uni-table-th {
+	font-size: 12px;
+}
+
+.table-fixed.left .uni-table-td:nth-of-type(1), .table-fixed.left .uni-table-th:nth-of-type(1) {
+	left: 0;
 	position: sticky;
 	z-index: 1;
 	background-color: #ffffff;
 }
-.table-fixed.left .uni-table-td:nth-of-type(1), .table-fixed.left .uni-table-th:nth-of-type(1) {
-	left: 0;
-}
-.table-fixed.right .uni-table-td:nth-of-type(1), .table-fixed.right .uni-table-th:nth-of-type(1) {
+.table-fixed.right .uni-table-td:last-of-type, .table-fixed.right .uni-table-th:last-of-type {
 	right: 0;
+	position: sticky;
+	z-index: 1;
+	background-color: #ffffff;
+}
+
+.mr-12 {
+	margin-right: 12px;
+}
+.ml-12 {
+	margin-left: 12px;
 }

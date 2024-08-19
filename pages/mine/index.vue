@@ -2,7 +2,7 @@
 	<view class="mine-wrap">
 		<view class="mine-top-wrap" v-if="isLogin">
 			<img class="avatar-img" :src="avatarImg" v-if="avatarImg">
-			<view class="avatar-wrap">
+			<view class="avatar-wrap" v-else>
 				<uni-icons color="#656565" type="person-filled" size="30"></uni-icons>
 			</view>
 			<view class="login-text">{{USER_INFO.userId}}</view>
@@ -14,10 +14,13 @@
 			<view class="login-text">登录</view>
 		</view>
 		<uni-card margin="10px 0">
-			<text>这里是个人信息页面，功能开发中，暂未开放......</text>
+			<text @click="test">介绍: 这个人太懒了，什么介绍都没有...</text>
 		</uni-card>
 		<uni-card margin="10px 0">
-			<text>这里是个人信息页面，功能开发中，暂未开放......</text>
+			<text>性别: 男</text>
+		</uni-card>
+		<uni-card margin="10px 0">
+			<text>属地: 浙江</text>
 		</uni-card>
         <button v-if="isLogin" style="background-color: #eb4436;margin-top: 24px;" type="primary" @click="logout">退出登录</button>
 	</view>
@@ -26,7 +29,6 @@
 <script setup>
 import { ref, computed, nextTick } from 'vue'
 import { useStore } from 'vuex'
-import { getAppendBlock, getCacheList, dateFormat } from '@/utils/index.js'
 import { baseUrl } from '@/request.api/index.js'
 
 const store = new useStore()
@@ -60,6 +62,18 @@ const logout = () => {
 	logoutAction()
 }
 
+const test = () => {
+	console.log(1)
+	// #ifdef MP-WEIXIN
+	uni.requestSubscribeMessage({
+		tmplIds: ['l-o84tqRf-ufnQDz_0gN13Lyp0S2bwBct6TJyHHX3xg'],
+		success(res) {
+			
+		}
+	})
+	// #endif
+}
+
 </script>
 
 <style lang="scss">
@@ -73,7 +87,6 @@ page {
 .mine-wrap {
 	width: calc(100% - 48px);
 	margin: 0 24px;
-	font-size: 14px;
 }
 .mine-top-wrap {
 	display: flex;

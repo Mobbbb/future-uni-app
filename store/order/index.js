@@ -75,6 +75,10 @@ const order = {
         async getFutureConfigInfo({ commit }) {
             const res = await fetchFutureConfigInfo()
             const futureConfigInfo = res.data || []
+			futureConfigInfo.forEach(item => {
+				item.value = item.name
+				item.text = item.chName
+			})
             commit('setFutureConfigInfo', futureConfigInfo)
         },
         async getFutureDayShareInfo({ commit }, params) {

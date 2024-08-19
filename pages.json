@@ -35,7 +35,7 @@
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "",
 		"navigationBarBackgroundColor": "#fff",
-		"backgroundColor": "#393e46",
+		"backgroundColor": "#fff", // 窗体背景颜色，即窗体下拉刷新或上拉加载时露出的背景
 		"app-plus": {
 			"background": "#efeff4"
 		}
