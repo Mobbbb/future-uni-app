@@ -1,6 +1,0 @@
-{
-  "navigationBarTitleText": "交易记录",
-  "usingComponents": {
-    "uni-card": "../../uni_modules/uni-card/components/uni-card/uni-card"
-  }
-}
