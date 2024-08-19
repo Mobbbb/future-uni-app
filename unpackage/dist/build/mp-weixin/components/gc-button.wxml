@@ -1,1 +1,0 @@
-<view class="{{['gc-button', 'data-v-bfac6ea0', c]}}" style="{{d}}" bindtap="{{e}}"><uni-icons wx:if="{{a}}" class="gc-button-icon loading-icon data-v-bfac6ea0" u-i="bfac6ea0-0" bind:__l="__l" u-p="{{b}}"></uni-icons><slot></slot></view>

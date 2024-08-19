@@ -1,1 +1,0 @@
-<view class="mine-wrap data-v-17a44f9d"><uni-card wx:if="{{a}}" class="data-v-17a44f9d" u-s="{{['d']}}" u-i="17a44f9d-0" bind:__l="__l" u-p="{{a}}"><text class="data-v-17a44f9d">这里是交易记录页面，功能开发中，暂未开放......</text></uni-card></view>
