@@ -13,14 +13,27 @@
 			</view>
 			<view class="login-text">登录</view>
 		</view>
-		<uni-card margin="10px 0">
-			<text @click="test">介绍: 这个人太懒了，什么介绍都没有...</text>
-		</uni-card>
-		<uni-card margin="10px 0">
-			<text>性别: 男</text>
-		</uni-card>
-		<uni-card margin="10px 0">
-			<text>属地: 浙江</text>
+		<uni-card margin="10px 0" padding="0">
+			<uni-list>
+			<!-- 	<uni-list-item title="优先平今" note="设置优先平仓的品种" showArrow
+					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
+					thumb-size="base" rightText="去设置" />
+				<uni-list-item title="品种简介" note="合约详细信息" showArrow
+					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
+					thumb-size="base" rightText="去查看" />
+				<uni-list-item title="邮件订阅" note="价格波动邮件提醒" showArrow
+					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
+					thumb-size="base" rightText="去设置" /> -->
+				<uni-list-item title="优先平今" note="设置优先平仓的品种" showArrow
+					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
+					thumb-size="base" rightText="已设置" />
+				<uni-list-item title="品种简介" note="合约详细信息" showArrow
+					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
+					thumb-size="base" rightText="已设置" />
+				<uni-list-item title="邮件订阅" note="价格波动邮件提醒" showArrow
+					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
+					thumb-size="base" rightText="已设置" />
+			</uni-list>
 		</uni-card>
         <button v-if="isLogin" style="background-color: #eb4436;margin-top: 24px;" type="primary" @click="logout">退出登录</button>
 	</view>
@@ -62,18 +75,6 @@ const logout = () => {
 	logoutAction()
 }
 
-const test = () => {
-	console.log(1)
-	// #ifdef MP-WEIXIN
-	uni.requestSubscribeMessage({
-		tmplIds: ['l-o84tqRf-ufnQDz_0gN13Lyp0S2bwBct6TJyHHX3xg'],
-		success(res) {
-			
-		}
-	})
-	// #endif
-}
-
 </script>
 
 <style lang="scss">
@@ -85,13 +86,12 @@ page {
 
 <style scoped>
 .mine-wrap {
-	width: calc(100% - 48px);
-	margin: 0 24px;
+	padding: 0 10px;
 }
 .mine-top-wrap {
 	display: flex;
 	align-items: center;
-	padding: 12px 0 24px 0;
+	padding: 10px 0 10px 0;
 }
 .avatar-wrap {
 	width: 60px;

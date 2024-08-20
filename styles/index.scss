@@ -12,6 +12,8 @@ $green-color: #21a67a;
 $active-green-color: #19825f;
 $disabled-green-color: #3aa67e;
 
+$mask-color: rgba(0, 0, 0, .4);
+
 
 html, body {
     width: 100%;
@@ -116,4 +118,10 @@ button[disabled][type='primary'] {
 }
 .ml-12 {
 	margin-left: 12px;
+}
+.mr-6 {
+	margin-right: 6px;
+}
+.ml-6 {
+	margin-left: 6px;
 }
