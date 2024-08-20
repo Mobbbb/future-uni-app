@@ -2,32 +2,40 @@ export function circleDom(color, size, left = 0, right = 4) {
     return `<span style="display: inline-block; width: ${size}px; height: ${size}px; border-radius: 50%; background: ${color}; margin: 0 ${right}px 2px ${left}px;vertical-align: middle;"></span>`
 }
 
+// #ifdef MP-WEIXIN
+const echarts = require('../../uni_modules/lime-echart/static/echarts.min')
+// #endif
+
+// #ifndef MP-WEIXIN
+import * as echarts from 'echarts'
+// #endif
+
 const fillColor = ['#e82b42', '#11a642', '#ffb347']
 
-// const areaColorArr = [
-//     new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-//         {
-//             offset: 0,
-//             color: fillColor[0]
-//         },
-//         {
-//             offset: 1,
-//             color: '#f23a69'
-//         }
-//     ]),
-//     new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-//         {
-//             offset: 0,
-//             color: fillColor[1]
-//         },
-//         {
-//             offset: 1,
-//             color: '#0e8936'
-//         }
-//     ]),
-// ]
+const areaColorArr = [
+    new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        {
+            offset: 0,
+            color: fillColor[0]
+        },
+        {
+            offset: 1,
+            color: '#f23a69'
+        }
+    ]),
+    new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+        {
+            offset: 0,
+            color: fillColor[1]
+        },
+        {
+            offset: 1,
+            color: '#0e8936'
+        }
+    ]),
+]
 
-const areaColorArr = ['#000', '#FFF']
+// const areaColorArr = ['#000', '#FFF']
 
 const fontSize = 10
 
@@ -364,6 +372,7 @@ export const getDoubleKLineOption = (params, config) => {
             },
             className: 'k-line-tooltip',
             formatter: function(data) {
+				return ''
                 let buyItem = {}
                 let saleItem = {}
                 if (data[0].seriesName === '多单') {

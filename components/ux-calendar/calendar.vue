@@ -51,7 +51,7 @@
 				</view>
 				<view class="uni-calendar__weeks" v-for="(item,weekIndex) in weeks" :key="weekIndex">
 					<view class="uni-calendar__weeks-item" v-for="(weeks,weeksIndex) in item" :key="weeksIndex">
-						<calendar-item class="uni-calendar-item--hook" :weeks="weeks" :calendar="calendar" :selected="selected" :lunar="lunar" @change="choiceDate"></calendar-item>
+						<calendar-item class="uni-calendar-item--hook" :showActive="showActive" :weeks="weeks" :calendar="calendar" :selected="selected" :lunar="lunar" @change="choiceDate"></calendar-item>
 					</view>
 				</view>
 			</view>
@@ -130,7 +130,11 @@
 			clearDate: {
 				type: Boolean,
 				default: true
-			}
+			},
+			showActive: {
+				type: Boolean,
+				default: true
+			},
 		},
 		data() {
 			return {
@@ -214,10 +218,10 @@
 				this.setDate(value)
 
 				const { year,month } = this.cale.getDate(value)
-        this.$emit('monthSwitch', {
-            year,
-            month
-        })
+				this.$emit('monthSwitch', {
+					year,
+					month
+				})
 			},
 			/**
 			 * 初始化日期显示
@@ -312,7 +316,7 @@
 			 * @param {Object} weeks
 			 */
 			choiceDate(weeks) {
-				if (weeks.disable) return
+				// if (weeks.disable) return
 				this.calendar = weeks
 				// 设置多选
 				this.cale.setMultiple(this.calendar.fullDate)

@@ -1,7 +1,7 @@
 <template>
     <view class="switch-wrap" :style="props.size === 'small' ? { transform: 'scale(0.8)' } : {}">
 		<switch class="ux-switch" :color="props.activeColor" :checked="props.modelValue" @change="switchChange" />
-		<text class="switch-text" :style="style">{{ showText }}</text>
+		<text class="switch-text" @click="clickLabel" :style="style">{{ showText }}</text>
 	</view>
 </template>
 
@@ -38,10 +38,16 @@ const style = computed(() => props.modelValue ? {} : {
 	color: '#000',
 })
 
-const emits = defineEmits(['update:modelValue'])
+const emits = defineEmits(['update:modelValue', 'change'])
 
 const switchChange = (e) => {
 	emits('update:modelValue', e.detail.value)
+	emits('change', e.detail.value)
+}
+
+const clickLabel = () => {
+	emits('update:modelValue', !props.modelValue)
+	emits('change', !props.modelValue)
 }
 </script>
 

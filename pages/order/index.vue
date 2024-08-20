@@ -4,9 +4,9 @@
         <view class="search-wrap">
             <view class="search-item-wrap">
                 <text>起止日期：</text>
-				<uni-icons type="left" color="#dcdfe6" size="26" @click="selectDate(-1)"></uni-icons>
+				<ux-icon right="6" type="left" size="16" @click="selectDate(-1)"></ux-icon>
 				<uni-datetime-picker type="daterange" v-model="searchParams.date" @change="selectDate" placeholder="请选择日期" />
-				<uni-icons type="right" color="#dcdfe6" size="26" @click="selectDate(1)"></uni-icons>
+				<ux-icon left="6" type="right"size="16" @click="selectDate(1)"></ux-icon>
             </view>
             <view class="search-item-wrap">
                 <text>合约名：</text>

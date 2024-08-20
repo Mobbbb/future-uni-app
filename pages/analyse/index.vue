@@ -14,7 +14,7 @@
                         {{analyseResult.totalProfit.toLocaleString()}}
                     </view>
                 </view>
-                <uni-card class="analyse-card">
+                <uni-card>
 					<view class="search-input-wrap">
 						<uni-datetime-picker type="daterange" v-model="basicDate" @change="changeBasicDate" placeholder="请选择日期" />
 					</view>
@@ -35,11 +35,11 @@
                     </view>
                 </uni-card>
             </view>
-            <uni-card class="analyse-card">
+            <uni-card>
                 <view class="card-title">品种盈亏及胜率<span class="card-title-date">({{displayTime}})</span></view>
 				<view id="barChart"><l-echart ref="barChart"></l-echart></view>
             </uni-card>
-            <uni-card class="analyse-card">
+            <uni-card>
                 <view class="card-title">多单统计<span class="card-title-date">({{displayTime}})</span></view>
                 <view class="card-column-wrap">
                     <view class="card-item-wrap">
@@ -106,7 +106,7 @@
                     </view>
                 </view>
             </uni-card>
-            <uni-card class="analyse-card">
+            <uni-card>
                 <view class="card-title">空单统计<span class="card-title-date">({{displayTime}})</span></view>
                 <view class="card-column-wrap">
                     <view class="card-item-wrap">
@@ -173,17 +173,17 @@
                     </view>
                 </view>
             </uni-card>
-            <uni-card class="analyse-card">
+            <uni-card>
                 <view class="analyse-calendar-header">
                     <view class="date-picker-wrap" v-if="dayCalendarShowStatus">
-						<uni-icons type="left" color="#dcdfe6" size="26" @click="changeCalendarDate(-1)"></uni-icons>
-						<uni-datetime-picker type="month" v-model="calendarDate" @change="changeCalendarDate('')" placeholder="请选择日期" />
-						<uni-icons type="right" color="#dcdfe6" size="26" @click="changeCalendarDate(1)"></uni-icons>
+						<ux-icon right="6" type="left" size="16" @click="changeCalendarDate(-1)"></ux-icon>
+						<ux-month-picker v-model="calendarDate" :clearIcon="false" @change="changeCalendarDate('')" placeholder="请选择日期"></ux-month-picker>
+						<ux-icon left="6" type="right" size="16" @click="changeCalendarDate(1)"></ux-icon>
                     </view>
                     <view class="date-picker-wrap" v-else>
-						<uni-icons type="left" color="#dcdfe6" size="26" @click="changeCalendarYear(-1)"></uni-icons>
-						<uni-datetime-picker type="year" v-model="calendarYear" @change="changeCalendarYear" placeholder="请选择日期" />
-						<uni-icons type="right" color="#dcdfe6" size="26" @click="changeCalendarYear(1)"></uni-icons>
+						<ux-icon right="6" type="left" size="16" @click="changeCalendarYear(-1)"></ux-icon>
+						<ux-year-picker v-model="calendarYear" :clearIcon="false" @change="changeCalendarYear" placeholder="请选择日期"></ux-year-picker>
+						<ux-icon left="6" type="right" size="16" @click="changeCalendarYear(1)"></ux-icon>
                     </view>
                     <ux-switch
 						size="small"
@@ -194,8 +194,7 @@
                         inactive-text="年"
 						class="ml-12" />
                 </view>
-				
-				<ux-calendar v-if="dayCalendarShowStatus" :date="calendarInnerDate" :showMonth="false" />
+				<ux-calendar v-if="dayCalendarShowStatus" :selected="selectedDate" :showActive="false" :date="calendarInnerDate" :showMonth="false" @change="selectCalendar" />
                 <monthly-calendar class="analyse-monthly-calendar" v-else :year="calendarYear" @on-click="drillingMonthCalendar">
                     <template #dateCell="{ data }">
                         <view class="date-cell month-date-cell" :class="getCalendarCellClass(data)">
@@ -205,10 +204,10 @@
                     </template>
                 </monthly-calendar>
             </uni-card>
-            <uni-card class="analyse-card">
+            <uni-card>
                 <view class="line-chart-filter-wrap">
-					<uni-data-select class="mr-12" v-model="dayLineFutureNameBindValue" :localdata="futuresList"  @change="changeDayLineFuture"></uni-data-select>
-					<uni-datetime-picker type="month" v-model="kLineDate" @change="changeKLineDate" placeholder="请选择日期" />
+					<uni-data-select class="data-select mr-12" v-model="dayLineFutureNameBindValue" :localdata="futuresList"  @change="changeDayLineFuture"></uni-data-select>
+					<ux-month-picker v-model="kLineDate" :clearIcon="false" @change="changeKLineDate" placeholder="请选择日期"></ux-month-picker>
                 </view>
 				<view id="lineChart"><l-echart ref="lineChart"></l-echart></view>
             </uni-card>
@@ -223,7 +222,7 @@ import { parseDateParams, getGapDate, getMonthShortcuts } from '@/utils'
 import festivalMap, { festivalList } from '@/config/festivalMap'
 import { getBarOption, getDoubleKLineOption } from './option'
 import MonthlyCalendar from '@/components/monthly-calendar.vue'
-import { dateFormat, calculateDate, toMonth } from '@/utils/umob.js'
+import { dateFormat, calculateDate, toMonth, dateGap } from '@/utils/umob.js'
 import { formatPriceLineData, formatBasicData, formatCalendarData } from '@/utils/data-processing.js'
 import { fetchOrderInfoHandle } from '@/request.api/index.js'
 
@@ -270,8 +269,8 @@ const analyseResult = reactive({
     preSaleProfitUp: 0,
     preSaleProfitDown: 0,
 })
-const calendarDate = ref(dateFormat(new Date()))
-const calendarYear = ref(dateFormat(new Date()))
+const calendarDate = ref(dateFormat(new Date(), 'yyyy-MM'))
+const calendarYear = ref(new Date().getFullYear().toString())
 const basicDate = ref(monthShortcuts[0].value)
 const kLineDate = uni.getStorageSync(K_LINE_DATE_KEY_NAME.value) 
     ? ref(uni.getStorageSync(K_LINE_DATE_KEY_NAME.value))
@@ -283,6 +282,7 @@ const barChartMaxWidth = ref(0)
 const dayLineFutureName = ref('')
 const closeFutureLists = ref([])
 const calendarDataMap = ref({})
+const selectedDate = ref([])
 
 const activeOrderTab = computed(() => store.state.app.activeOrderTab)
 const enFutureNameMap = computed(() => store.getters['order/enFutureNameMap'])
@@ -290,14 +290,7 @@ const enFutureMap = computed(() => store.getters['order/enFutureMap'])
 const isLogin = computed(() => store.getters['app/isLogin'])
 const futuresList = computed(() => store.getters['order/futuresList'])
 const displayTime = computed(() => dateFormat(basicDate.value[0]) + ' To ' + dateFormat(basicDate.value[1]))
-const calendarInnerDate = computed({
-    get() {
-        return dateFormat(new Date(calendarDate.value))
-    },
-    set(value) {
-        calendarDate.value = dateFormat(value)
-    },
-})
+const calendarInnerDate = computed(() => dateFormat(new Date(calendarDate.value)))
 const dayLineFutureNameBindValue = computed({
     get() {
         const firstFuturesItem = futuresList.value[0] || {}
@@ -329,13 +322,26 @@ const getFutureByName = async () => { // 指定品种的全部订单
     return res.result || []
 }
 
+function addZero(num) {
+	if (num < 10) {
+		num = `0${num}`
+	}
+	return num
+}
+
+const selectCalendar = async (data) => {
+	calendarDate.value = `${data.lunar.cYear}-${addZero(data.lunar.cMonth)}`
+	
+	initDayCalendar()
+}
+
 const initCalendar = async (date) => {
     if (!isLogin.value) return
     let dateRange = []
     if (dayCalendarShowStatus.value) {
         const dateParam = date && dateFormat(date) || calendarDate.value
         const day = new Date(dateParam.slice(0, 4), dateParam.slice(5, 7), 0).getDate()
-        dateRange = [dateParam.slice(0, 8) + '01', `${dateParam.slice(0, 8)}${day}`]
+        dateRange = [dateParam.slice(0, 7) + '-01', `${dateParam.slice(0, 7)}-${day}`]
     } else {
         const year = date || new Date(calendarYear.value).getFullYear()
         dateRange = [`${year}-01-01`, `${year}-12-31`]
@@ -421,37 +427,24 @@ const changeDayLineFuture = () => {
     initDayLineChart()
 }
 
-const changeCalendarDate = (num) => {
+const changeCalendarDate = async (num) => {
     if (num) {
-        calendarDate.value = calculateDate(dateFormat(calendarDate.value, 'yyyy-MM'), num) + '-01'
+        calendarDate.value = calculateDate(calendarDate.value, num)
     }
-    
-    initCalendar()
+
+	initDayCalendar()
 }
 
 const changeCalendarYear = (value) => {
     if (typeof value === 'number') {
         const year = new Date(calendarYear.value).getFullYear()
-        calendarYear.value = `${year + value}-01-01`
+        calendarYear.value = (year + value).toString()
     }
     initCalendar()
 }
 
 const getCalendarCellClass = (data) => {
     let itemData = calendarDataMap.value[data.day.slice(0, 7)]
-    if (dayCalendarShowStatus.value) {
-        itemData = calendarDataMap.value[data.day]
-        const cellDay = (new Date(data.day)).getDay()
-        if (cellDay === 0 || cellDay === 6) { // 周末
-            return 'weekend-day-cell'
-        }
-        if (festivalList.includes(data.day) || festivalMap[data.day] || festivalMap[data.day.slice(5, 10)]) { // 节假日
-            return 'festival-day-cell'
-        }
-        if (data.day.slice(0, 7) !== calendarDate.value.slice(0, 7)) { // 其他月份
-            return ''
-        }
-    }
 
     if (calendarLoadingStatus.value) return ''
 
@@ -470,21 +463,43 @@ const getCalendarCellClass = (data) => {
     return className
 }
 
+const getSelectedCalendarData = () => {
+	selectedDate.value = []
+	
+	const dateArr = dateGap(new Date(`${calendarDate.value}-01`), new Date(calendarDate.value.slice(0, 4), calendarDate.value.slice(5, 7), 0))
+
+	dateArr.forEach(date => {
+		const cellDay = (new Date(date)).getDay()
+		
+		if (festivalList.includes(date) || festivalMap[date] || festivalMap[date.slice(5, 10)]) {
+			selectedDate.value.push({ date: date, info: festivalMap[date] || festivalMap[date.slice(5, 10)] || '休', color: '#a8ade3' })
+		} else if (cellDay !== 0 && cellDay !== 6) { // 非周末
+			if (typeof calendarDataMap.value[date] !== 'undefined') {
+				if (calendarDataMap.value[date]) {
+					selectedDate.value.push({
+						date: date,
+						info: Math.round(calendarDataMap.value[date]),
+						color: calendarDataMap.value[date] > 0 ? '#eb4436' : '#0e9d58',
+						background: calendarDataMap.value[date] > 0 ? '#fae6e7' : '#e8f3eb',
+					})
+				} else {
+					selectedDate.value.push({
+						date: date,
+						info: '0',
+						color: '#303133',
+					})
+				}
+			} else {
+				selectedDate.value.push({ date: date, info: '--', color: '#303133' })
+			}
+		}
+	})
+}
+
 const formatCalendarCellData = (data) => {
     if (calendarLoadingStatus.value) return ''
 
     let itemData = calendarDataMap.value[data.day.slice(0, 7)]
-    if (dayCalendarShowStatus.value) {
-        itemData = calendarDataMap.value[data.day]
-        const cellDay = (new Date(data.day)).getDay()
-        if (festivalList.includes(data.day) || festivalMap[data.day] || festivalMap[data.day.slice(5, 10)]) {
-            return festivalMap[data.day] || festivalMap[data.day.slice(5, 10)] || '休'
-        }
-        // 周末、其他月份
-        if (data.day.slice(0, 7) !== calendarDate.value.slice(0, 7) || cellDay === 0 || cellDay === 6) {
-            return ''
-        }
-    }
 
     if (typeof itemData !== 'undefined') {
         return Math.round(itemData)
@@ -501,13 +516,13 @@ const changeCalendarDim = () => {
 
 const drillingMonthCalendar = (value) => {
     dayCalendarShowStatus.value = true
-    calendarDate.value = value.day + '-01'
+    calendarDate.value = value.day
     initCalendar()
 }
 
 const initAnalyseData = () => {
     initBasicInfo()
-    initCalendar()
+    initDayCalendar()
     initDayLineChart()
 }
 
@@ -515,6 +530,11 @@ const getDataWhileActive = () => {
     if (isLogin.value) {
         initAnalyseData()
     }
+}
+
+const initDayCalendar  = async () => {
+	await initCalendar()
+	getSelectedCalendarData()
 }
 
 watch(isLogin, (value) => {
@@ -539,9 +559,6 @@ onMounted(() => {
     box-sizing: border-box;
     height: 42px;
 	margin-bottom: 12px;
-}
-.analyse-content-wrap {
-
 }
 .analyse-calendar-header {
     display: flex;
@@ -671,5 +688,8 @@ onMounted(() => {
 .analyse-select {
     width: 120px;
     margin-right: 12px;
+}
+.data-select {
+	width: 100%;
 }
 </style>
