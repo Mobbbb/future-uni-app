@@ -31,6 +31,25 @@
 			}
 		}
 	],
+	"subPackages": [
+		{
+			"root": "pages/mine/sub-pages",
+			"pages": [
+				{
+					"path": "close-setting",
+					"style": {
+						"navigationBarTitleText": "优先平今"
+					}
+				},
+				{
+					"path": "introduction",
+					"style": {
+						"navigationBarTitleText": "品种简介"
+					}
+				}
+			]
+		}
+	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
 		"navigationBarTitleText": "",

@@ -311,10 +311,9 @@ onMounted(async () => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .future-wrap {
-	width: calc(100% - 48px);
-    margin: 0 24px;
+    margin: 0 $page-padding;
 	font-size: 14px;
 }
 .opening-order-table {

@@ -5,7 +5,7 @@
 			<view class="avatar-wrap" v-else>
 				<uni-icons color="#656565" type="person-filled" size="30"></uni-icons>
 			</view>
-			<view class="login-text">{{USER_INFO.userId}}</view>
+			<view class="login-text">{{ USER_INFO.name }}</view>
 		</view>
 		<view class="mine-top-wrap" @click="login" v-else>
 			<view class="avatar-wrap">
@@ -15,24 +15,15 @@
 		</view>
 		<uni-card margin="10px 0" padding="0">
 			<uni-list>
-			<!-- 	<uni-list-item title="优先平今" note="设置优先平仓的品种" showArrow
-					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
-					thumb-size="base" rightText="去设置" />
-				<uni-list-item title="品种简介" note="合约详细信息" showArrow
-					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
-					thumb-size="base" rightText="去查看" />
-				<uni-list-item title="邮件订阅" note="价格波动邮件提醒" showArrow
-					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
-					thumb-size="base" rightText="去设置" /> -->
-				<uni-list-item title="优先平今" note="设置优先平仓的品种" showArrow
-					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
-					thumb-size="base" rightText="已设置" />
-				<uni-list-item title="品种简介" note="合约详细信息" showArrow
-					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
-					thumb-size="base" rightText="已设置" />
-				<uni-list-item title="邮件订阅" note="价格波动邮件提醒" showArrow
-					thumb="https://qiniu-web-assets.dcloud.net.cn/unidoc/zh/unicloudlogo.png"
-					thumb-size="base" rightText="已设置" />
+				<uni-list-item title="优先平今" link to="/pages/mine/sub-pages/close-setting" note="设置优先平仓的品种" showArrow
+					:thumb="base64.set"
+					thumb-size="medium" rightText="去设置" />
+				<uni-list-item title="品种简介" link to="/pages/mine/sub-pages/introduction" note="合约详细信息" showArrow
+					:thumb="base64.list"
+					thumb-size="medium" rightText="去查看" />
+				<uni-list-item title="邮件通知" note="价格波动邮件提醒" showArrow
+					:thumb="base64.mail"
+					thumb-size="medium" rightText="已设置" />
 			</uni-list>
 		</uni-card>
         <button v-if="isLogin" style="background-color: #eb4436;margin-top: 24px;" type="primary" @click="logout">退出登录</button>
@@ -43,6 +34,7 @@
 import { ref, computed, nextTick } from 'vue'
 import { useStore } from 'vuex'
 import { baseUrl } from '@/request.api/index.js'
+import base64 from '@/config/base64.js'
 
 const store = new useStore()
 
@@ -84,14 +76,14 @@ page {
 }
 </style>
 
-<style scoped>
+<style scoped lang="scss">
 .mine-wrap {
-	padding: 0 10px;
+	padding: 0 $page-padding;
 }
 .mine-top-wrap {
 	display: flex;
 	align-items: center;
-	padding: 10px 0 10px 0;
+	padding: 10px 0 24px 0;
 }
 .avatar-wrap {
 	width: 60px;

@@ -113,13 +113,14 @@ const app = {
                 commit('SET_USER_INFO', { userId })
                 const res = await fetchUserInfo()
                 const { data = {} } = res
-                const { uid, avatar, account, inDayFirstLists } = data
+                const { uid, avatar, account, inDayFirstLists, name } = data
                 if (uid) {
                     commit('SET_USER_INFO', {
                         userId: uid,
                         avatar,
                         account,
-                        inDayFirstLists: inDayFirstLists.split(',')
+                        inDayFirstLists: inDayFirstLists.split(','),
+						name,
                     })
                     dispatch('updateLocalAvatar', {
                         uid,
