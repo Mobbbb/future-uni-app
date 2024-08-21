@@ -11,6 +11,8 @@ import UxMonthPicker from './components/ux-month-picker/index.vue'
 import UxYearPicker from './components/ux-year-picker/index.vue'
 import UxIcon from './components/ux-icon.vue'
 
+import '@/styles/global.scss'
+
 export function createApp() {
 	const app = createSSRApp(App)
 

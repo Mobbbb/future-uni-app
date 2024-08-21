@@ -363,7 +363,7 @@ page {
 }
 </style>
 
-<style scoped>
+<style scoped lang="scss">
 .order-wrap {
 	font-size: 14px;
 	height: 100%;
@@ -377,20 +377,12 @@ page {
     flex: 1;
 	overflow: hidden;
 }
-.table-search-input-wrap {
-    display: flex;
-    align-items: center;
-    flex-wrap: wrap;
-    padding-left: 12px;
-    font-size: 12px;
-    background: white;
-}
 .search-item-wrap {
     display: flex;
     align-items: center;
     color: #606266;
     margin: 0 0 16px 0;
-	padding: 0 12px;
+	padding: 0 $page-padding;
 }
 .search-item-wrap text {
     flex-shrink: 0;
