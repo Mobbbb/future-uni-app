@@ -5,13 +5,13 @@
             <view class="search-item-wrap">
                 <text>起止日期：</text>
 				<ux-icon right="6" type="left" size="16" @click="selectDate(-1)"></ux-icon>
-				<uni-datetime-picker type="daterange" v-model="searchParams.date" @change="selectDate" placeholder="请选择日期" />
+				<uni-datetime-picker type="daterange" v-model="searchParams.date" @change="selectDate" :clear-icon="false" placeholder="请选择日期" />
 				<ux-icon left="6" type="right"size="16" @click="selectDate(1)"></ux-icon>
             </view>
             <view class="search-item-wrap">
                 <text>合约名：</text>
-				<uni-easyinput v-model="searchParams.name" placeholder="请输入合约名"></uni-easyinput>
-                <button class="ml-12 mr-12" type="primary" size="mini" @click="searchHandle">搜索</button>
+				<uni-easyinput v-model="searchParams.name" placeholder="请输入合约名" :clearable="false"></uni-easyinput>
+                <button class="ml-12 mr-12" type="info" size="mini" @click="searchHandle">搜索</button>
                 <button size="mini" @click="resetHandle">重置</button>
             </view>
         </view>

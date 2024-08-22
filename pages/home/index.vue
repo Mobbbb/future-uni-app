@@ -9,10 +9,10 @@
                 label-position="left"
                 ref="ruleFormRef">
                 <uni-forms-item required label="交易日期" name="date">
-					<uni-datetime-picker type="datetime" v-model="formData.date" placeholder="请选择日期" />
+					<uni-datetime-picker type="datetime" :clear-icon="false" v-model="formData.date" placeholder="请选择日期" />
                 </uni-forms-item>
                 <uni-forms-item required label="合约" name="name">
-					<uni-data-picker v-model="formData.name" :localdata="futuresTree" popup-title="请选择合约" @change="selectOrderTree"></uni-data-picker>
+					<uni-data-picker v-model="formData.name" :clear-icon="false" :localdata="futuresTree" popup-title="请选择合约" @change="selectOrderTree"></uni-data-picker>
                 </uni-forms-item>
                 <uni-forms-item required label="成交价" name="price">
 					<uni-number-box v-model="formData.price" style="width: 180px;" placeholder="请输入成交价" ></uni-number-box>
@@ -24,8 +24,8 @@
             <view style="padding-bottom: 12px;">
                 <button style="margin-right: 4px;" size="mini" type="buy" @click="submitHandle(1, 1)">买入</button>
                 <button style="margin-right: 4px;" size="mini" type="sale" @click="submitHandle(0, 1)">卖出</button>
-                <button style="margin-right: 4px;" type="primary" size="mini" :disabled="!buySaleListNum.buyListNum" @click="submitHandle(0, 0)">平多</button>
-                <button style="margin-right: 4px;" type="primary" size="mini" :disabled="!buySaleListNum.saleListNum" @click="submitHandle(1, 0)">平空</button>
+                <button style="margin-right: 4px;" type="info" size="mini" :disabled="!buySaleListNum.buyListNum" @click="submitHandle(0, 0)">平多</button>
+                <button style="margin-right: 4px;" type="info" size="mini" :disabled="!buySaleListNum.saleListNum" @click="submitHandle(1, 0)">平空</button>
             </view>
             <view class="recently-tag-wrap" v-if="recentlyFeatureNames.length">
                 <text style="margin-bottom: 8px;">最近合约：</text>

@@ -7,7 +7,7 @@
 </template>
 
 <script setup>
-import { computed, toRefs, defineProps } from 'vue'
+import { computed, toRefs } from 'vue'
 
 const props = defineProps({
 	color: {

@@ -3,7 +3,7 @@
 </template>
 
 <script setup>
-import { computed, toRefs, defineProps, defineEmits } from 'vue'
+import { computed, toRefs } from 'vue'
 import base64 from '@/config/base64.js'
 
 const props = defineProps({

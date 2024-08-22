@@ -44,7 +44,7 @@ const switchChange = async (e, item) => {
 
 </script>
 
-<style scoped>
+<style scoped lang="scss">
 .config-list {
 	background-color: #fff;
 }
@@ -54,7 +54,7 @@ const switchChange = async (e, item) => {
 	flex-direction: row;
 	justify-content: space-between;
 	align-items: center;
-	padding: 11px 15px;
+	padding: 11px $page-padding;
 }
 .config-list-cell-text {
 	flex: 1;
@@ -64,7 +64,7 @@ const switchChange = async (e, item) => {
     z-index: 3;
     right: 0;
     bottom: 0;
-    left: 15px;
+    left: $page-padding;
     height: 1px;
     content: "";
     transform: scaleY(.5);

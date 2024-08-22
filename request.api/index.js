@@ -33,7 +33,15 @@ export const updateUserInDayFirstLists = (lists) => {
     return axios.request({
         url: prefixApi + '/user/updateUserInDayFirstLists',
         method: 'post',
-        data: { lists, },
+        data: { lists },
+    })
+}
+
+export const updateUserEmail = (email) => {
+    return axios.request({
+        url: prefixApi + '/user/updateUserEmail',
+        method: 'post',
+        data: { email },
     })
 }
 

@@ -5,20 +5,18 @@
 			<div class="monthly-calendar__header"><slot name="header"></slot></div>
 			<div class="monthly-calendar__body">
 			    <table class="monthly-calendar-table" cellspacing="0" cellpadding="0">
-			        <tbody>
-			            <tr class="el-calendar-table__row" v-for="item in monthArr" :key="item">
-			                <td v-for="cell in item" :key="cell">
-			                    <div class="el-calendar-day"
-								 :class="`${activeDate}` === `${year_}-${monthMap[cell]}` ? 'active-day' : ''" @click="clickHandle({ month: monthMap[cell], label: cell, day: `${year_}-${monthMap[cell]}` })">
-			                        <slot name="dateCell" 
-			                            :data="{ month: monthMap[cell], label: cell, day: `${year_}-${monthMap[cell]}` }"
-			                            :month="cell">
-			                            <p class="inner-cell-p">{{ cell }}</p>
-			                        </slot>
-			                    </div>
-			                </td>
-			            </tr>
-			        </tbody>
+					<tr class="monthly-calendar-table__row" v-for="item in monthArr" :key="item">
+						<td class="monthly-calendar-table__cell" v-for="cell in item" :key="cell">
+							<div class="el-calendar-day"
+							 :class="`${activeDate}` === `${year_}-${monthMap[cell]}` ? 'active-day' : ''" @click="clickHandle({ month: monthMap[cell], label: cell, day: `${year_}-${monthMap[cell]}` })">
+								<slot name="dateCell" 
+									:data="{ month: monthMap[cell], label: cell, day: `${year_}-${monthMap[cell]}` }"
+									:month="cell">
+									<div class="inner-cell-p">{{ cell }}</div>
+								</slot>
+							</div>
+						</td>
+					</tr>
 			    </table>
 			</div>
         </view>
@@ -146,6 +144,9 @@ export default {
 }
 .monthly-calendar-table {
     table-layout: fixed;
+	/* #ifdef MP-WEIXIN */
+	display: table;
+	/* #endif */
     width: 100%;
 }
 .monthly-calendar__header {
@@ -155,7 +156,7 @@ export default {
     padding-bottom: 20px;
     border-bottom: 1px solid #ebeef5;
 }
-.monthly-calendar-table td {
+.monthly-calendar-table .monthly-calendar-table__cell {
     vertical-align: top;
     padding: 0 6px;
     box-sizing: border-box;
@@ -170,7 +171,7 @@ export default {
     cursor: pointer;
     margin-bottom: 12px;
 }
-.monthly-calendar-table .el-calendar-day p:first-of-type {
+.monthly-calendar-table .el-calendar-day .inner-cell-p {
     padding: 8px;
 }
 .monthly-calendar__body {
@@ -179,6 +180,18 @@ export default {
 .monthly-calendar-table .active-day {
 	background-color: #2979ff;
 	color: white;
+}
+
+.monthly-calendar-table__row {
+	/* #ifdef MP-WEIXIN */
+	display: table-row;
+	/* #endif */
+}
+
+.monthly-calendar-table__cell {
+	/* #ifdef MP-WEIXIN */
+	display: table-cell;
+	/* #endif */
 }
 
 .uni-calendar__content {

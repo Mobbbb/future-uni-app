@@ -21,12 +21,12 @@
 				<uni-list-item title="品种简介" link to="/pages/mine/sub-pages/introduction" note="合约详细信息" showArrow
 					:thumb="base64.list"
 					thumb-size="medium" rightText="去查看" />
-				<uni-list-item title="邮件通知" note="价格波动邮件提醒" showArrow
+				<uni-list-item title="邮件通知" link to="/pages/mine/sub-pages/email-setting" note="价格波动邮件提醒" showArrow
 					:thumb="base64.mail"
 					thumb-size="medium" rightText="已设置" />
 			</uni-list>
 		</uni-card>
-        <button v-if="isLogin" style="background-color: #eb4436;margin-top: 24px;" type="primary" @click="logout">退出登录</button>
+        <button v-if="isLogin" style="margin-top: 24px;" type="buy" @click="logout">退出登录</button>
 	</view>
 </template>
 

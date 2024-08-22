@@ -16,7 +16,7 @@
                 </view>
                 <uni-card>
 					<view class="search-input-wrap">
-						<uni-datetime-picker type="daterange" v-model="basicDate" @change="changeBasicDate" placeholder="请选择日期" />
+						<uni-datetime-picker type="daterange" v-model="basicDate" :clear-icon="false" @change="changeBasicDate" placeholder="请选择日期" />
 					</view>
                     <view class="card-title">交易统计<span class="card-title-date">({{displayTime}})</span></view>
                     <view class="card-row-wrap">
@@ -198,15 +198,15 @@
                 <monthly-calendar class="analyse-monthly-calendar" v-else :year="calendarYear" @on-click="drillingMonthCalendar">
                     <template #dateCell="{ data }">
                         <view class="date-cell month-date-cell" :class="getCalendarCellClass(data)">
-                            <p>{{ data.label }}</p>
-                            <p>{{ formatCalendarCellData(data) }}</p>
+                            <div class="date-cell-top">{{ data.label }}</div>
+                            <div class="date-cell-bottom">{{ formatCalendarCellData(data) }}</div>
                         </view>
                     </template>
                 </monthly-calendar>
             </uni-card>
             <uni-card>
                 <view class="line-chart-filter-wrap">
-					<uni-data-select class="data-select mr-12" v-model="dayLineFutureNameBindValue" :localdata="futuresList"  @change="changeDayLineFuture"></uni-data-select>
+					<uni-data-select class="data-select mr-12" :clear="false" v-model="dayLineFutureNameBindValue" :localdata="futuresList"  @change="changeDayLineFuture"></uni-data-select>
 					<ux-month-picker v-model="kLineDate" :clearIcon="false" @change="changeKLineDate" placeholder="请选择日期"></ux-month-picker>
                 </view>
 				<view id="lineChart"><l-echart ref="lineChart"></l-echart></view>
@@ -621,15 +621,18 @@ onMounted(() => {
     display: flex;
     align-items: center;
 }
+.month-cell-wrap {
+	
+}
 .date-cell {
     height: 100%;
     font-size: 12px;
 }
-.date-cell p:first-of-type {
+.date-cell .date-cell-top {
     padding: 8px;
     font-size: 16px;
 }
-.red-calendar-cell p:first-of-type, .green-calendar-cell p:first-of-type {
+.red-calendar-cell .date-cell-top, .green-calendar-cell .date-cell-top {
     color: #222;
 }
 .red-calendar-cell {
@@ -642,19 +645,19 @@ onMounted(() => {
     color: rgb(14, 157, 88);
     font-weight: bold;
 }
-.month-date-cell p:first-of-type {
+.month-date-cell .date-cell-top {
     font-weight: normal;
 }
 .weekend-day-cell {
     color: #a8ade3;
 }
-.festival-day-cell p:first-of-type {
+.festival-day-cell .date-cell-top {
     font-weight: bold;
 }
-.festival-day-cell p:last-of-type {
+.festival-day-cell .date-cell-bottom {
     color: #a8ade3;
 }
-.normal-calendar-cell p:first-of-type {
+.normal-calendar-cell .date-cell-top {
     font-weight: bold;
 }
 .no-data-month-cell {
