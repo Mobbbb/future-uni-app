@@ -46,6 +46,12 @@
 					"style": {
 						"navigationBarTitleText": "品种简介"
 					}
+				},
+				{
+					"path": "email-setting",
+					"style": {
+						"navigationBarTitleText": "邮箱设置"
+					}
 				}
 			]
 		}

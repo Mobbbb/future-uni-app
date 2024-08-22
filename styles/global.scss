@@ -51,11 +51,23 @@ button[type='sale'][disabled]:active {
 	background-color: $active-green-color;
 }
 
-button[type='primary'] {
+button[type='info'] {
+	color: white;
 	background-color: $button-primary;
 }
-button[disabled][type='primary'] {
+button[type='info']:active {
+	color: $button-active-text;
+	background-color: $active-button-primary;
+}
+button[type='info'][disabled] {
 	background-color: $disabled-button-primary;
+}
+button[type='info'][disabled]:active {
+	background-color: $disabled-button-primary;
+}
+.button-hover[type='info'] {
+	color: $button-active-text;
+	background-color: $active-button-primary;
 }
 
 ::-webkit-scrollbar {

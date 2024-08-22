@@ -102,6 +102,9 @@ const app = {
         setInDayFirstLists(state, value) {
             state.USER_INFO.inDayFirstLists = value
         },
+		setEmail(state, value) {
+            state.USER_INFO.email = value
+        },
         SET_USER_INFO(state, value) {
             state.USER_INFO = value
         },
@@ -113,7 +116,7 @@ const app = {
                 commit('SET_USER_INFO', { userId })
                 const res = await fetchUserInfo()
                 const { data = {} } = res
-                const { uid, avatar, account, inDayFirstLists, name } = data
+                const { uid, avatar, account, inDayFirstLists, name, email } = data
                 if (uid) {
                     commit('SET_USER_INFO', {
                         userId: uid,
@@ -121,6 +124,7 @@ const app = {
                         account,
                         inDayFirstLists: inDayFirstLists.split(','),
 						name,
+						email,
                     })
                     dispatch('updateLocalAvatar', {
                         uid,
@@ -134,6 +138,9 @@ const app = {
             commit('SET_USER_INFO', {})
             delCookie('future-uid')
             delCookie('future-token')
+			uni.switchTab({
+				url: '/pages/mine/index',
+			})
         },
         saveLoginStatus({}, data) {
             const { uid, avatar, cookies } = data
