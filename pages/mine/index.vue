@@ -5,7 +5,10 @@
 			<view class="avatar-wrap" v-else>
 				<uni-icons color="#656565" type="person-filled" size="30"></uni-icons>
 			</view>
-			<view class="login-text">{{ USER_INFO.name }}</view>
+			<view>
+				<view class="login-text">{{ USER_INFO.name }}</view>
+				<view class="login-sub-text">{{ USER_INFO.userId }}</view>
+			</view>
 		</view>
 		<view class="mine-top-wrap" @click="login" v-else>
 			<view class="avatar-wrap">
@@ -83,7 +86,7 @@ page {
 .mine-top-wrap {
 	display: flex;
 	align-items: center;
-	padding: 10px 0 24px 0;
+	padding: 16px 0 16px 12px;
 }
 .avatar-wrap {
 	width: 60px;
@@ -98,6 +101,11 @@ page {
 .login-text {
 	font-weight: bold;
 	font-size: 20px;
+}
+.login-sub-text {
+	font-weight: normal;
+	font-size: 12px;
+	margin-top: 4px;
 }
 .avatar-img {
 	width: 60px;

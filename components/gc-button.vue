@@ -80,7 +80,7 @@ export default {
     position: relative;
     padding: 0 6px;
     height: 40px;
-    border-radius: 40px;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;

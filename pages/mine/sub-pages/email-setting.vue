@@ -1,6 +1,6 @@
 <template>
 	<view class="email-config-wrap">
-		<uni-easyinput class="email-input" prefixIcon="email" :styles="styles" v-model="email" :clearable="false" placeholder="请输入邮箱"></uni-easyinput>
+		<uni-easyinput prefixIcon="email" :styles="styles" v-model="email" :clearable="false" placeholder="请输入邮箱"></uni-easyinput>
         <button style="margin-top: 16px;" type="buy" :disabled="!isValidEmail" @click="save">保存</button>
 	</view>
 </template>
@@ -28,11 +28,7 @@ const save = async () => {
 	const res = await updateUserEmail(email.value)
 	if (res.success) {
 		setEmail(email.value)
-		uni.showToast({
-			title: '保存成功',
-			duration: 2000,
-			icon: 'success'
-		})
+		ElMessage.success('保存成功')
 	}
 }
 
@@ -57,10 +53,10 @@ onMounted(() => {
 </style>
 
 <style>
-.email-input >>> .uni-easyinput__content {
+.email-config-wrap .uni-easyinput__content {
 	border-color: transparent!important;
 }
-.email-input >>> .uni-easyinput__content-input {
+.email-config-wrap .uni-easyinput__content-input {
 	height: 46px;
 }
 </style>

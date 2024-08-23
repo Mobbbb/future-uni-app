@@ -13,6 +13,12 @@ page {
 	background-color: #fff;
 }
 
+button[size='micro'] {
+	display: inline-block;
+    line-height: 2;
+    font-size: 12px;
+    padding: 0 1em;
+}
 button[type='buy'] {
 	color: white;
 	background-color: $red-color;
