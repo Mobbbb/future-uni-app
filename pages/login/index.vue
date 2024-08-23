@@ -36,10 +36,7 @@ const isLogin = computed(() => store.getters['app/isLogin'])
 
 const clickLogin = async () => {
 	if (!username.value || !password.value) {
-		uni.showToast({
-			title: '账号/密码不得为空',
-			duration: 2000
-		})
+		ElMessage.error('请填写账号密码')
 	} else {
 		const result = await fetchUserLogin(username.value, password.value)
 		afterLoginSubmit(result)
@@ -56,18 +53,18 @@ const afterLoginSubmit = async (result) => {
 	const cookies = [''] // 非wx不需要cookie，模拟空cookie
 	// #endif
 
-	uni.showToast({
-		title: msg,
-		duration: 2000,
-		icon: success && cookies.length ? 'success' : 'error'
-	})
 	if (success && cookies.length) {
+		ElMessage.success(msg)
 		data.cookies = cookies
 		saveLoginStatus(data)
 		await INIT_USER()
-		uni.switchTab({
-			url: '/pages/mine/index',
-		})
+		setTimeout(() => {
+			uni.switchTab({
+				url: '/pages/mine/index',
+			})
+		}, 1000)
+	} else {
+		ElMessage.error(msg)
 	}
 }
 

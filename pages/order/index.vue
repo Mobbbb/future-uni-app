@@ -24,15 +24,15 @@
 					<uni-th prop="hands" width="60" label="手数">手数</uni-th>
 					<uni-th prop="commission" width="90" label="手续费">手续费</uni-th>
 					<uni-th prop="openOrClose" width="70" label="开/平">开/平</uni-th>
-					<uni-th prop="openOrClose" width="150" label="交易时间">交易时间</uni-th>
+					<uni-th prop="openOrClose" width="160" label="交易时间">交易时间</uni-th>
 					<uni-th prop="openOrClose" width="90" label="成交序号">成交序号</uni-th>
 					<uni-th prop="openOrClose" width="120" label="关联序号">关联序号</uni-th>
 					<uni-th prop="openOrClose" width="60" label="状态">状态</uni-th>
-					<uni-th prop="openOrClose" align="right" width="160" label="操作">操作</uni-th>
+					<uni-th prop="openOrClose" align="right" width="135" label="操作">操作</uni-th>
 					<uni-th prop="openOrClose" align="center" width="100" label="平仓盈亏">平仓盈亏</uni-th>
 					<uni-th prop="openOrClose" align="center" width="90" label="净盈亏">净盈亏</uni-th>
 				</uni-tr>
-				<uni-tr v-for="(item, index) in orderList" :key="item.id" @row-click="orderRowClick(item)">
+				<uni-tr v-for="(item, index) in orderList" :key="item.id">
 					<uni-td>{{ item.name }}</uni-td>
 					<uni-td>
 						<text :style="item.buyOrSale ? { color: '#eb4436' } : { color: '#0e9d58' }">
@@ -58,10 +58,10 @@
 					</uni-td>
 					<uni-td>
 						<view class="alignRight">
-							<button class="mr-12" size="mini" type="warning" v-if="!item.openOrClose" @click="cancelRow(scope)">
+							<button class="mr-12" size="micro" type="warning" v-if="!item.openOrClose" @click="cancelRow(item)">
 								撤销
 							</button>
-							<button size="mini" type="buy" @click="deleteRow(scope)">
+							<button size="micro" type="buy" @click="deleteRow(item)">
 								删除
 							</button>
 						</view>
@@ -86,14 +86,15 @@
         <view class="pagination-wrap">
 			<uni-pagination @change="onPageChange" :total="orderCountNum.total" :current="searchParams.currentPage" :pageSize="searchParams.pageSize" />
         </view>
-		<uni-popup ref="popup" type="center" :mask-click="false" :animation="false">
-			<text>确定要删除吗？</text>
-			<template #footer>
-			    <text class="dialog-footer">
-			        <button type="danger" @click="confirmDelete">确定</button>
-			        <button @click="centerDialogVisible = false">取消</button>
-			    </text>
-			</template>
+		<uni-popup ref="confirmDialog" type="dialog">
+			<uni-popup-dialog type="warn"
+				cancelText="取消"
+				confirmText="确定"
+				title="警告"
+				content="确定要删除吗？" 
+				@confirm="confirmDelete"
+				@close="closeConfirmDialog">
+		</uni-popup-dialog>
 		</uni-popup>
     </view>
 </template>
@@ -111,9 +112,9 @@ const monthShortcuts = getMonthShortcuts(5)
 const store = new useStore()
 const searchInputWrap = ref()
 const tableTabWrap = ref()
+const confirmDialog = ref()
 const orderTableHeight = ref(0)
 const loading = ref(false)
-const centerDialogVisible = ref(false)
 const importDialogVisible = ref(false)
 const maxColunmWidth = ref(80)
 const orderCountNum = ref({ total: 0 })
@@ -145,7 +146,6 @@ const shortcuts = [
 ]
 
 const orderList = computed(() => store.state.order.orderList)
-const activeOrderTab = computed(() => store.state.app.activeOrderTab)
 const isLogin = computed(() => store.getters['app/isLogin'])
 const isAdministrator = computed(() => store.getters['app/isAdministrator'])
 const overMediaCritical = computed(() => store.getters['app/overMediaCritical'])
@@ -193,22 +193,27 @@ const getTableData = async () => {
 let currentDeleteItem = null
 const deleteRow = async (data) => {
     currentDeleteItem = data
-    centerDialogVisible.value = true
+    confirmDialog.value.open()
 }
 
 const cancelRow = async (data) => {
     loading.value = true
-    await fetchCancelOrder(data.row) // 回退开仓单
+    await fetchCancelOrder(data) // 回退开仓单
     getTableData()
 }
 
 const confirmDelete = async () => {
     if (currentDeleteItem) {
         loading.value = true
-        await fetchDeleteOrder(currentDeleteItem.row.id)
+        await fetchDeleteOrder(currentDeleteItem.id)
         getTableData()
+        currentDeleteItem = null
     }
-    centerDialogVisible.value = false
+    confirmDialog.value.close()
+}
+
+const closeConfirmDialog = () => {
+    confirmDialog.value.close()
 }
 
 const getSummaries = (param) => {
@@ -269,11 +274,7 @@ const resetHandle = () => {
 
 const submitHandle = async () => {
     if (!submitData.name.length) {
-		uni.showToast({
-			title: '请选择角色',
-			duration: 2000,
-			icon: 'error'
-		})
+        ElMessage.error('请选择角色')
         return
     }
     const params = {
@@ -288,11 +289,7 @@ const submitHandle = async () => {
         submitData.num = 0
         submitData.subNum = 0
         submitData.remark = ''
-		uni.showToast({
-			title: '录入成功',
-			duration: 2000,
-			icon: 'success'
-		})
+        ElMessage.success('录入成功')
     }
 }
 
@@ -321,35 +318,16 @@ const showSubmitViewHandle = () => {
     submitData.date = Date.parse(searchParams.date[0]) === Date.parse(searchParams.date[1]) ? searchParams.date[0] : new Date()
 }
 
-const initTable = () => {
-    if (activeOrderTab.value === 'table') {
-        nextTick(() => {
-            if (!orderTableHeight.value) {
-                orderTableHeight.value = tableTabWrap.value.getBoundingClientRect().height
-                    - searchInputWrap.value.getBoundingClientRect().height
-                    - 48
-                // searchParams.pageSize = Math.ceil((orderTableHeight.value - 80) / 40)
-                // searchParams.pageSize = searchParams.pageSize < 0 ? 10 : searchParams.pageSize
-            }
-            getTableData()
-        })
-    }
-}
-
 watch(isLogin, (value) => {
     if (value) {
-        initTable()
+        getTableData()
     } else {
         setOrderList([]) // 清空数据
     }
 })
 
-watch(activeOrderTab, () => {
-    initTable()
-})
-
 onMounted(() => {
-    initTable()
+    getTableData()
 })
 </script>
 

@@ -31,11 +31,13 @@ class HttpRequest {
 
 	request(options) {
 		options = Object.assign(this.getInsideConfig(), options)
+		const { data = {}, params = {} } = options
+
 		return new Promise(resolve => {
 			const requestTask = uni.request({
 				method: options.method || 'GET',
 				url: options.baseURL +  options.url || '',
-				data: options.data || {},
+				data: Object.assign(data, params),
 				header: options.header || {},
 				responseType: options.responseType || 'text',
 				success: (res) => {
@@ -43,18 +45,10 @@ class HttpRequest {
 					const cookies = res.cookies || []
 					const { data, success, msg, code } = resData
 					if (code === 403) {
-						uni.showToast({
-							title: '登录已失效，请重新登录',
-							duration: 2000,
-							icon: 'error',
-						})
+						ElMessage.error('登录已失效')
 						store.dispatch('app/logoutAction')
 					} else if (success === false) { // 服务器返回错误代码
-						uni.showToast({
-							title: msg,
-							duration: 2000,
-							icon: 'error',
-						})
+						ElMessage.error(msg)
 					}
 					resData.cookies = cookies
 					resolve(resData)

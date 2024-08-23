@@ -223,11 +223,7 @@ const submitHandle = async (buyOrSale, openOrClose) => {
         const data = await fetchInsertOrder(formData) || {}
         const { success } = data
         if (success) {
-			uni.showToast({
-				title: '操作成功',
-				duration: 2000,
-				icon: 'success'
-			})
+            ElMessage.success('操作成功')
             rerenderTable()
             formData.hands = 0
             formData.price = 0

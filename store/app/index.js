@@ -138,9 +138,11 @@ const app = {
             commit('SET_USER_INFO', {})
             delCookie('future-uid')
             delCookie('future-token')
-			uni.switchTab({
-				url: '/pages/mine/index',
-			})
+            setTimeout(() => {
+                uni.switchTab({
+                    url: '/pages/mine/index',
+                })
+            }, 1000)
         },
         saveLoginStatus({}, data) {
             const { uid, avatar, cookies } = data

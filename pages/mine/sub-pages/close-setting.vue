@@ -33,11 +33,7 @@ const switchChange = async (e, item) => {
 
 	const res = await updateUserInDayFirstLists(checkList.join(','))
 	if (res.success) {
-		uni.showToast({
-			title: '修改成功',
-			duration: 2000,
-			icon: 'success'
-		})
+		ElMessage.success('修改成功')
 		setInDayFirstLists(checkList)
 	}
 }
