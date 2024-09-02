@@ -1,6 +1,7 @@
 <!--交易 -> 交易记录-->
 <template>
     <view class="future-wrap order-wrap" ref="tableTabWrap">
+		<ux-nav :showBack="false">交易记录</ux-nav>
         <view class="search-wrap">
             <view class="search-item-wrap">
                 <text>起止日期：</text>
@@ -94,7 +95,7 @@
 				content="确定要删除吗？" 
 				@confirm="confirmDelete"
 				@close="closeConfirmDialog">
-		</uni-popup-dialog>
+			</uni-popup-dialog>
 		</uni-popup>
     </view>
 </template>
@@ -147,8 +148,6 @@ const shortcuts = [
 
 const orderList = computed(() => store.state.order.orderList)
 const isLogin = computed(() => store.getters['app/isLogin'])
-const isAdministrator = computed(() => store.getters['app/isAdministrator'])
-const overMediaCritical = computed(() => store.getters['app/overMediaCritical'])
 
 const accountName = computed(() => {
     const { account = '' } = store.state.app.USER_INFO

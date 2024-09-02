@@ -10,6 +10,8 @@ import UxRight from './components/ux-right.vue'
 import UxMonthPicker from './components/ux-month-picker/index.vue'
 import UxYearPicker from './components/ux-year-picker/index.vue'
 import UxIcon from './components/ux-icon.vue'
+import UxDialog from './components/ux-dialog.vue'
+import UxNav from './components/ux-nav.vue'
 
 import '@/styles/global.scss'
 
@@ -26,6 +28,8 @@ export function createApp() {
 	app.component('ux-month-picker', UxMonthPicker)
 	app.component('ux-year-picker', UxYearPicker)
 	app.component('ux-icon', UxIcon)
+	app.component('ux-dialog', UxDialog)
+	app.component('ux-nav', UxNav)
 	
 	return {
 		app,

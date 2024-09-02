@@ -116,7 +116,6 @@ const rules = reactive({
 
 const futuresList = computed(() => store.getters['order/futuresList'])
 const isLogin = computed(() => store.getters['app/isLogin'])
-const overMediaCritical = computed(() => store.getters['app/overMediaCritical'])
 const openingOrderList = computed(() => store.state.order.openingOrderList)
 const openingOrderGroup = computed(() => store.state.order.openingOrderGroup)
 const setLoginDrawerStatus = (status) => store.commit('app/setLoginDrawerStatus', status)

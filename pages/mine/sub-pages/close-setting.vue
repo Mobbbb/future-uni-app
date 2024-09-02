@@ -1,4 +1,5 @@
 <template>
+	<ux-nav>优先平今</ux-nav>
 	<view class="config-wrap">
 		<view class="config-list">
 			<view class="config-list-cell" v-for="item in closeSettingfuturesList" :key="item.id">
@@ -16,13 +17,20 @@ import { updateUserInDayFirstLists } from '@/request.api/index.js'
 
 const store = new useStore()
 
+const isLogin = computed(() => store.getters['app/isLogin'])
 const USER_INFO = computed(() => store.state.app.USER_INFO)
 const closeSettingfuturesList = computed(() => store.getters['order/closeSettingfuturesList'])
 const initCheckList = computed(() => USER_INFO.value.inDayFirstLists || [])
 
 const setInDayFirstLists = (status) => store.commit('app/setInDayFirstLists', status)
+const logoutAction = () => store.dispatch('app/logoutAction')
 
 const switchChange = async (e, item) => {
+	if (!isLogin.value) {
+		ElMessage.error('请先登录')
+		logoutAction()
+		return
+	}
 	const checkList = [...initCheckList.value]
 	const index = checkList.indexOf(item.name)
 	if (index > -1) {

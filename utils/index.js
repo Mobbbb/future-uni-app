@@ -188,3 +188,41 @@ export function calculatePearsonCorrelation(data1, data2) {
     // 计算皮尔逊相关系数
     return pearsonCorrelation(data1, data2)
 }
+
+export const getMenuButtonBoundingClientRect = () => {
+	let statusBarHeight = uni.getStorageSync('statusBarHeight')
+	let platform = uni.getStorageSync('platform')
+	if (!statusBarHeight || !platform) {
+		const res = uni.getSystemInfoSync()
+		statusBarHeight = res.statusBarHeight
+		platform = res.platform
+		uni.setStorageSync('statusBarHeight', statusBarHeight)
+		uni.setStorageSync('platform', platform)
+	}
+	
+	let navBarHeight = uni.getStorageSync('navBarHeight')
+	if (!navBarHeight) {
+		// 计算navBarHeight
+		if (uni.getMenuButtonBoundingClientRect) { // 胶囊
+			let menuInfo = uni.getStorageSync('menuInfo')
+			if (!menuInfo) menuInfo = uni.getMenuButtonBoundingClientRect()
+			if (menuInfo) {
+				uni.setStorageSync('menuInfo', menuInfo)
+				// 导航栏高度
+				navBarHeight = menuInfo.height + (menuInfo.top - res.statusBarHeight) * 2
+			} else {
+				navBarHeight = platform === 'android' ? 48 : 44
+			}
+		} else {
+			// 导航栏高度
+			navBarHeight = platform === 'android' ? 48 : 44
+		}
+	}
+	
+	uni.setStorageSync('navBarHeight', navBarHeight)
+	
+	return {
+		navBarHeight,
+		statusBarHeight,
+	}
+}

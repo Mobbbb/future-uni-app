@@ -10,7 +10,7 @@ const echarts = require('../../uni_modules/lime-echart/static/echarts.min')
 import * as echarts from 'echarts'
 // #endif
 
-const fillColor = ['#e82b42', '#11a642', '#ffb347']
+export const fillColor = ['#e82b42', '#11a642', '#ffb347']
 
 const areaColorArr = [
     new echarts.graphic.LinearGradient(0, 0, 0, 1, [
@@ -133,7 +133,7 @@ function getYAxisIndexSeries(series, dataSource, option) {
     }
 }
 
-export const getBarOption = (data) => {
+export const getBarOption = (data, params) => {
     let sourceData = []
     Object.keys(data).forEach(key => {
         sourceData.push([key, data[key].totalProfit, data[key].winNum / data[key].totalNum * 100])
@@ -171,6 +171,7 @@ export const getBarOption = (data) => {
             triggerOn: 'click',
             className: 'analyse-bar-tooltip',
             formatter: function(data) {
+				params.value = data
 				return ''
                 // const color = data[0].data[1] > 0 ? fillColor[0] : fillColor[1]
                 // return `<div style="border: 1px solid #eeeeee;padding: 12px;border-radius: 4px;color: #000;display: flex;align-items: center;font-size: 14px;line-height: 14px;">

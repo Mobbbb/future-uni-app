@@ -9,25 +9,25 @@
 		{
 			"path": "pages/mine/index",
 			"style": {
-				"navigationBarTitleText": ""
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/order/index",
 			"style": {
-				"navigationBarTitleText": "交易记录"
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/analyse/index",
 			"style": {
-				"navigationBarTitleText": "账户分析"
+				"navigationStyle": "custom"
 			}
 		},
 		{
 			"path": "pages/login/index",
 			"style": {
-				"navigationBarTitleText": "登录"
+				"navigationStyle": "custom"
 			}
 		}
 	],
@@ -38,19 +38,25 @@
 				{
 					"path": "close-setting",
 					"style": {
-						"navigationBarTitleText": "优先平今"
+						"navigationStyle": "custom"
 					}
 				},
 				{
 					"path": "introduction",
 					"style": {
-						"navigationBarTitleText": "品种简介"
+						"navigationStyle": "custom"
 					}
 				},
 				{
 					"path": "email-setting",
 					"style": {
-						"navigationBarTitleText": "邮箱设置"
+						"navigationStyle": "custom"
+					}
+				},
+				{
+					"path": "guide",
+					"style": {
+						"navigationStyle": "custom"
 					}
 				}
 			]
