@@ -1,5 +1,5 @@
 import { fetchUserInfo, fetchListData } from '@/request.api/index.js'
-import { delCookie, getCookie } from '@/utils/umob.js'
+import { delCookie, getCookie, dateFormat } from '@/utils/umob.js'
 
 const app = {
     namespaced: true,
@@ -11,6 +11,10 @@ const app = {
                 width: 0.62,
                 minWidth: 332,
             },
+			screenInfo: {
+				width: 0,
+				height: 0,
+			},
             mediaCriticalValue: 544, // 响应式临界尺寸
 
             homeListData: [],
@@ -44,18 +48,16 @@ const app = {
             }
         },
         overMediaCritical(state) {
-            return document.body.clientWidth < state.mediaCriticalValue
+            return screenInfo.width < state.mediaCriticalValue
         },
         isLogin(state) {
             return !!state.USER_INFO.userId
         },
-        isWhiteUser(state) {
-			// todo
-            return 1 //whiteUserList.includes(state.USER_INFO.userId)
-        },
-        isAdministrator(state) {
-			// todo
-            return 0 // administrator === state.USER_INFO.userId
+		isProExpire(state) {
+            if (state.USER_INFO.proTime) {
+                return state.USER_INFO.proTime < dateFormat(new Date(), 'yyyy-MM-dd hh:mm:ss')
+            }
+            return false
         },
     },
     mutations: {
@@ -105,6 +107,9 @@ const app = {
 		setEmail(state, value) {
             state.USER_INFO.email = value
         },
+		setScreenInfo(state, value) {
+            state.screenInfo = value
+        },
         SET_USER_INFO(state, value) {
             state.USER_INFO = value
         },
@@ -116,20 +121,14 @@ const app = {
                 commit('SET_USER_INFO', { userId })
                 const res = await fetchUserInfo()
                 const { data = {} } = res
-                const { uid, avatar, account, inDayFirstLists, name, email } = data
-                if (uid) {
-                    commit('SET_USER_INFO', {
-                        userId: uid,
-                        avatar,
-                        account,
-                        inDayFirstLists: inDayFirstLists.split(','),
-						name,
-						email,
-                    })
-                    dispatch('updateLocalAvatar', {
-                        uid,
-                        avatar,
-                    })
+                if (data.uid) {
+					data.userId = data.uid
+					data.inDayFirstLists = data.inDayFirstLists.split(',')
+                    commit('SET_USER_INFO', data)
+                    // dispatch('updateLocalAvatar', {
+                    //     uid,
+                    //     avatar,
+                    // })
                 }
             }
         },

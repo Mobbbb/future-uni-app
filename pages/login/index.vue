@@ -1,5 +1,6 @@
 <!--交易 -> 下单页-->
 <template>
+	<ux-nav>登录</ux-nav>
 	<view class="login-wrap">
 		<uni-card padding="24px 10px">
 			<view class="input-item-wrap">

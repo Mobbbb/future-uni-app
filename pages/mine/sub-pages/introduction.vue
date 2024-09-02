@@ -1,4 +1,5 @@
 <template>
+	<ux-nav>品种简介</ux-nav>
 	<view class="introduction">
 		<uni-collapse v-model="openIndex" accordion>
 			<uni-collapse-item :title="item.chName" v-for="item in futuresList">
@@ -15,20 +16,20 @@
 						<view>{{ item.activeName.toUpperCase() }}</view>
 					</view>
 					<view class="collapse-item">
-						<view class="collapse-item-title">交易单位</view>
-						<view>{{ item.num }}</view>
+						<view class="collapse-item-title">每手每报价单位价格</view>
+						<view>{{ item.num }} 元/手/报价单位</view>
 					</view>
 					<view class="collapse-item">
 						<view class="collapse-item-title">开仓手续费</view>
-						<view>{{ item.openCommission }}</view>
+						<view>{{ item.openCommissionType === 'number' ? item.openCommission * commissionType + '元/手' : item.openCommission * commissionType * 100 + '%' }}</view>
 					</view>
 					<view class="collapse-item">
 						<view class="collapse-item-title">平仓手续费</view>
-						<view>{{ item.closeCommission }}</view>
+						<view>{{ item.closeCommissionType === 'number' ? item.closeCommission * commissionType + '元/手' : item.closeCommission * commissionType * 100 + '%' }}</view>
 					</view>
 					<view class="collapse-item">
 						<view class="collapse-item-title">日内平仓手续费</view>
-						<view>{{ item.dayCloseCommission }}</view>
+						<view>{{ item.closeCommissionType === 'number' ? item.dayCloseCommission * commissionType + '元/手' : item.dayCloseCommission * commissionType * 100 + '%' }}</view>
 					</view>
 					<view class="collapse-item">
 						<view class="collapse-item-title">是否支持优先平今</view>
@@ -48,6 +49,7 @@ import { updateUserInDayFirstLists } from '@/request.api/index.js'
 const store = new useStore()
 
 const futuresList = computed(() => store.getters['order/futuresList'])
+const commissionType = computed(() => store.state.app.USER_INFO.commissionType || 4)
 
 const openIndex = ref('0')
 

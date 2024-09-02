@@ -230,3 +230,10 @@ export const fetchFutureFestivalInfo = (params) => {
         params,
     })
 }
+
+export const fetchAppVersion = () => {
+    return axios.request({
+        url: prefixApi + '/other/getNewAppVersion',
+        method: 'get',
+    })
+}

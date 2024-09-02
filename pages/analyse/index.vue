@@ -1,10 +1,9 @@
 <!--交易 -> 账户分析-->
 <template>
+	<ux-nav :showBack="false" :background="topBg.header">账户分析</ux-nav>
     <view class="future-wrap">
         <view class="analyse-content-wrap">
-            <view :style="analyseResult.totalProfit >= 0 ?
-                { background: 'linear-gradient(#fff, rgba(243, 63, 109, 0.1) 120px, #fff 120px, #fff 100%)' } :
-                { background: 'linear-gradient(#fff, rgba(17, 166, 66, 0.1) 120px, #fff 120px, #fff 100%)' }">
+            <view :style="topBg.bottom">
                 <view class="total-analyse-wrap">
                     <view class="total-analyse-title">盈亏</view>
                     <view class="total-analyse-value" 
@@ -37,7 +36,25 @@
             </view>
             <uni-card>
                 <view class="card-title">品种盈亏及胜率<span class="card-title-date">({{displayTime}})</span></view>
-				<view id="barChart"><l-echart ref="barChart"></l-echart></view>
+				<view id="barChart">
+					<l-echart ref="barChart"></l-echart>
+					<view class="bar-custom-tooltips">
+						{{ barParams[0] && barParams[0].data[0] || '' }}
+						<view style="width: 11px;margin: 0 4px 0 12px;">
+							<view style="width: 100%;height: 3px;border-radius: 3px;margin-bottom: 2px;" :style="{ background: fillColor[0] }"></view>
+							<view style="width: 100%;height: 3px;border-radius: 3px;margin-top: 2px;" :style="{ background: fillColor[1] }"></view>
+						</view>
+						{{ barParams[0] && barParams[0].dimensionNames[1] || '' }}
+						<text style="font-weight: bold;margin-left: 4px;" :style="{ color: barParams[0] && barParams[0].data[1] > 0 ? fillColor[0] : fillColor[1] }">
+							{{ Math.round(barParams[0] && barParams[0].data[1]) }}
+						</text>
+						<view style="width: 6px;height: 6px;border-radius: 10px;margin: 0 4px 0 12px;" :style="{ background: fillColor[2] }"></view>
+						{{ barParams[0] && barParams[0].dimensionNames[2] }}
+						<text style="font-weight: bold;margin-left: 4px;" :style="{ color: barParams[0] && barParams[0].data[1] > 0 ? fillColor[0] : fillColor[1] }">
+							{{ barParams[0] && barParams[0].data[2].toFixed(2) }}%
+						</text>    
+					</view>
+				</view>
             </uni-card>
             <uni-card>
                 <view class="card-title">多单统计<span class="card-title-date">({{displayTime}})</span></view>
@@ -198,8 +215,8 @@
                 <monthly-calendar class="analyse-monthly-calendar" v-else :year="calendarYear" @on-click="drillingMonthCalendar">
                     <template #dateCell="{ data }">
                         <view class="date-cell month-date-cell" :class="getCalendarCellClass(data)">
-                            <div class="date-cell-top">{{ data.label }}</div>
-                            <div class="date-cell-bottom">{{ formatCalendarCellData(data) }}</div>
+                            <view class="date-cell-top">{{ data.label }}</view>
+                            <view class="date-cell-bottom">{{ formatCalendarCellData(data) }}</view>
                         </view>
                     </template>
                 </monthly-calendar>
@@ -220,7 +237,7 @@ import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } 
 import { useStore } from 'vuex'
 import { parseDateParams, getGapDate, getMonthShortcuts } from '@/utils'
 import festivalMap, { festivalList } from '@/config/festivalMap'
-import { getBarOption, getDoubleKLineOption } from './option'
+import { getBarOption, getDoubleKLineOption, fillColor } from './option'
 import MonthlyCalendar from '@/components/monthly-calendar.vue'
 import { dateFormat, calculateDate, toMonth, dateGap } from '@/utils/umob.js'
 import { formatPriceLineData, formatBasicData, formatCalendarData } from '@/utils/data-processing.js'
@@ -242,6 +259,7 @@ let barChartIns = null
 let lineChartIns = null
 const lineChart = ref()
 const barChart = ref()
+const barParams = ref([])
 const monthShortcuts = getMonthShortcuts(4)
 const shortcuts = [
     { text: '今日', value: () => getGapDate() },
@@ -302,6 +320,18 @@ const dayLineFutureNameBindValue = computed({
     set(value) {
         dayLineFutureName.value = value
     },
+})
+
+const topBg = computed(() => {
+	return analyseResult.totalProfit >= 0 ?
+	    {
+			header: 'linear-gradient(#fff, #fef8fa 100%)',
+			bottom: { background: 'linear-gradient(#fef8fa, rgba(243, 63, 109, 0.1) 120px, #fff 120px, #fff 100%)' },
+		} :
+	    {
+			header: 'linear-gradient(#fff, #f8fdf9 100%)',
+			bottom: { background: 'linear-gradient(#f8fdf9, rgba(17, 166, 66, 0.1) 120px, #fff 120px, #fff 100%)' },
+		}
 })
 
 const getCloseFutureByDate = async (dateParams) => { // 所有平仓订单
@@ -388,7 +418,7 @@ const initBasicInfo = async () => {
 
     nextTick(async () => {
         barChartIns = await barChart.value.init(echarts)
-        barChartIns.setOption(getBarOption(params.chFutureMap))
+        barChartIns.setOption(getBarOption(params.chFutureMap, barParams))
         barChartIns.dispatchAction({
             type: 'showTip',
             seriesIndex: 0,
@@ -678,6 +708,20 @@ onMounted(() => {
     height: 37.5vh;
     width: 100%;
     background: white;
+	position: relative;
+}
+.bar-custom-tooltips {
+	position: absolute;
+	top: 0;
+	left: 0;
+	border: 1px solid #eeeeee;
+	padding: 12px;
+	border-radius: 4px;
+	color: #000;
+	display: flex;
+	align-items: center;
+	font-size: 14px;
+	line-height: 14px;
 }
 #lineChart {
     height: 460px;
