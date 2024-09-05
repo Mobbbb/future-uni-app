@@ -142,6 +142,9 @@
 		methods: {
 			changeYear(date) {
 				this.paneYear = this.defaultYearRange[date.detail.value].toString()
+				this.$emit('input', this.paneYear)
+				this.$emit('update:modelValue', this.paneYear)
+				this.$emit('change', this.paneYear)
 			},
 			initPicker(newVal) {
 				if (!newVal || Array.isArray(newVal) && !newVal.length) {
@@ -161,9 +164,9 @@
 			clear(needEmit = true) {
 				this.paneYear = ''
 				if (needEmit) {
-					this.$emit('change', '')
 					this.$emit('input', '')
 					this.$emit('update:modelValue', '')
+					this.$emit('change', '')
 				}
 			},
 		}

@@ -1,8 +1,8 @@
 <template>
 	<ux-nav>品种简介</ux-nav>
 	<view class="introduction">
-		<uni-collapse v-model="openIndex" accordion>
-			<uni-collapse-item :title="item.chName" v-for="item in futuresList">
+		<uni-collapse v-model="openIndex" accordion v-if="futuresList.length">
+			<uni-collapse-item v-for="item in futuresList" :key="item.name">
 				<template #title>
 					<view class="collapse-title">{{ item.chName }}</view>
 				</template>
@@ -13,7 +13,7 @@
 					</view>
 					<view class="collapse-item">
 						<view class="collapse-item-title">交易代码</view>
-						<view>{{ item.activeName.toUpperCase() }}</view>
+						<view>{{ item.name.toUpperCase() }}</view>
 					</view>
 					<view class="collapse-item">
 						<view class="collapse-item-title">每手每报价单位价格</view>

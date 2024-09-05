@@ -14,14 +14,14 @@
 			<view class="half-width reach-me" @click="showReachMe = true">
 				<text class="reach-me-text">联系我们</text>
 			</view>
-			<view class="half-width copy-btn" @click="setClipboardData(href)">复制链接</view>
+			<view class="half-width copy-btn" @click="setClipboardData(href, '链接已复制')">复制链接</view>
 		</view>
 		<ux-dialog v-model="showReachMe">
 			<view class="dialog-wrap">
-				<view class="dialog-item mb-8" @click="setClipboardData('mobbbb.top@gmail.com')">
+				<view class="dialog-item mb-8" @click="setClipboardData('mobbbb.top@gmail.com', '邮箱已复制')">
 					<uni-icons type="email-filled" size="20" color="#606266"></uni-icons><text class="dialog-title">mobbbb.top@gmail.com</text>
 				</view>
-				<view class="dialog-item" @click="setClipboardData('_Silver_')">
+				<view class="dialog-item" @click="setClipboardData('_Silver_', '微信已复制')">
 					<uni-icons type="weixin" size="20" color="#606266"></uni-icons><text class="dialog-title">_Silver_</text>
 				</view>
 			</view>
@@ -41,12 +41,12 @@ const showReachMe = ref(false)
 const futuresList = computed(() => store.getters['order/futuresList'])
 const commissionType = computed(() => store.state.app.USER_INFO.commissionType || 4)
 
-const setClipboardData = (value) => {
+const setClipboardData = (value, msg) => {
 	if (value) {
 		uni.setClipboardData({
 			data: value,
 			success: function () {
-				ElMessage.success('安装地址已复制')
+				ElMessage.success(msg)
 			}
 		})
 	} else {
@@ -57,7 +57,9 @@ const setClipboardData = (value) => {
 onMounted(async () => {
 	const result = await fetchAppVersion()
 	const { data } = result || {}
-	href.value = data.href || ''
+	if (data.href) {
+		href.value = `使用电脑打开链接，下载安装即可使用。\n链接：${data.href}`
+	}
 })
 
 </script>

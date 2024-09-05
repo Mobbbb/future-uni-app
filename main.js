@@ -12,6 +12,8 @@ import UxYearPicker from './components/ux-year-picker/index.vue'
 import UxIcon from './components/ux-icon.vue'
 import UxDialog from './components/ux-dialog.vue'
 import UxNav from './components/ux-nav.vue'
+import { onShareAppMessage } from '@dcloudio/uni-app'
+import shareMixin from '@/mixins/share.js'
 
 import '@/styles/global.scss'
 
@@ -19,6 +21,7 @@ export function createApp() {
 	const app = createSSRApp(App)
 
 	app.use(store)
+	app.mixin(shareMixin)
 
 	app.component('ux-table', UxTable)
 	app.component('ux-switch', UxSwitch)
