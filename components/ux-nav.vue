@@ -48,7 +48,13 @@ const navBarHeight = ref(0)
 const statusBarHeight = ref(0)
 
 const backHandle = () => {
-	uni.navigateBack()
+	if (getCurrentPages().length > 1) {
+		uni.navigateBack()
+	} else {
+		uni.switchTab({
+			url: '/pages/mine/index',
+		})
+	}
 }
 
 const genNavStyle = async () => {

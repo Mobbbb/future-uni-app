@@ -190,7 +190,7 @@ export function calculatePearsonCorrelation(data1, data2) {
 }
 
 export const getMenuButtonBoundingClientRect = () => {
-	let statusBarHeight = uni.getStorageSync('statusBarHeight')
+	let statusBarHeight = uni.getStorageSync('statusBarHeight') || 0
 	let platform = uni.getStorageSync('platform')
 	if (!statusBarHeight || !platform) {
 		const res = uni.getSystemInfoSync()
@@ -209,7 +209,7 @@ export const getMenuButtonBoundingClientRect = () => {
 			if (menuInfo) {
 				uni.setStorageSync('menuInfo', menuInfo)
 				// 导航栏高度
-				navBarHeight = menuInfo.height + (menuInfo.top - res.statusBarHeight) * 2
+				navBarHeight = menuInfo.height + (menuInfo.top - statusBarHeight) * 2
 			} else {
 				navBarHeight = platform === 'android' ? 48 : 44
 			}

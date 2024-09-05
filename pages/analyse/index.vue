@@ -233,7 +233,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick } from 'vue'
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick, getCurrentInstance } from 'vue'
 import { useStore } from 'vuex'
 import { parseDateParams, getGapDate, getMonthShortcuts } from '@/utils'
 import festivalMap, { festivalList } from '@/config/festivalMap'
@@ -242,6 +242,7 @@ import MonthlyCalendar from '@/components/monthly-calendar.vue'
 import { dateFormat, calculateDate, toMonth, dateGap } from '@/utils/umob.js'
 import { formatPriceLineData, formatBasicData, formatCalendarData } from '@/utils/data-processing.js'
 import { fetchOrderInfoHandle } from '@/request.api/index.js'
+import { onShareAppMessage } from '@dcloudio/uni-app'
 
 // #ifdef MP-WEIXIN
 const echarts = require('../../uni_modules/lime-echart/static/echarts.min')
@@ -547,7 +548,7 @@ const changeCalendarDim = () => {
 const drillingMonthCalendar = (value) => {
     dayCalendarShowStatus.value = true
     calendarDate.value = value.day
-    initCalendar()
+    initDayCalendar()
 }
 
 const initAnalyseData = () => {
@@ -566,6 +567,18 @@ const initDayCalendar  = async () => {
 	await initCalendar()
 	getSelectedCalendarData()
 }
+
+onShareAppMessage(() => {
+	const pages = getCurrentPages()
+	const currentPage = pages[pages.length - 1]
+	const { route } = currentPage || {}
+	const { proxy } = getCurrentInstance()
+
+	proxy.setShareInfo({
+		title: `我竟然${analyseResult.totalProfit >= 0 ? '赚' : '亏'}了${Math.abs(analyseResult.totalProfit)}元，来看看你的吧！`,
+		path: route,
+	})
+})
 
 watch(isLogin, (value) => {
     if (value) {
@@ -659,8 +672,9 @@ onMounted(() => {
     font-size: 12px;
 }
 .date-cell .date-cell-top {
-    padding: 8px;
+	padding: 8px 0 3px 0;
     font-size: 16px;
+	height: 22px;
 }
 .red-calendar-cell .date-cell-top, .green-calendar-cell .date-cell-top {
     color: #222;
@@ -678,14 +692,12 @@ onMounted(() => {
 .month-date-cell .date-cell-top {
     font-weight: normal;
 }
-.weekend-day-cell {
-    color: #a8ade3;
-}
 .festival-day-cell .date-cell-top {
     font-weight: bold;
 }
-.festival-day-cell .date-cell-bottom {
-    color: #a8ade3;
+.date-cell-bottom {
+	padding: 0 0 5px 0;
+	height: 22px;
 }
 .normal-calendar-cell .date-cell-top {
     font-weight: bold;

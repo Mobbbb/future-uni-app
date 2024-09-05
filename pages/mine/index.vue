@@ -3,7 +3,7 @@
 	<view class="mine-wrap">
 		<view class="mine-top-wrap" v-if="isLogin">
 			<img class="avatar-img" :src="avatarImg" v-if="avatarImg">
-			<view class="avatar-wrap" v-else>
+			<view class="default-avatar-wrap" v-else>
 				<uni-icons color="#656565" type="person-filled" size="30"></uni-icons>
 			</view>
 			<view>
@@ -12,7 +12,7 @@
 			</view>
 		</view>
 		<view class="mine-top-wrap" @click="login" v-else>
-			<view class="avatar-wrap">
+			<view class="default-avatar-wrap">
 				<uni-icons color="#656565" type="person-filled" size="30"></uni-icons>
 			</view>
 			<view class="login-text">登录</view>
@@ -42,7 +42,7 @@
 					<uni-list-item title="品种简介" link to="/pages/mine/sub-pages/introduction" note="合约详细信息" showArrow
 						:thumb="base64.list"
 						thumb-size="medium" rightText="去查看" />
-					<uni-list-item title="设置邮件" link to="/pages/mine/sub-pages/email-setting" note="价格波动邮件提醒" showArrow
+					<uni-list-item title="邮件订阅" link to="/pages/mine/sub-pages/email-setting" note="价格波动邮件提醒" showArrow
 						:thumb="base64.mail"
 						thumb-size="medium" :rightText="USER_INFO.email ? '已设置' : '去设置'" />
 				</uni-list>
@@ -140,10 +140,10 @@ page {
 	align-items: center;
 	padding: 24px 0 24px 12px;
 }
-.avatar-wrap {
-	width: 60px;
-	height: 60px;
-	border-radius: 60px;
+.default-avatar-wrap {
+	width: 70px;
+	height: 70px;
+	border-radius: 70px;
 	background-color: #c9c9c9;
 	margin-right: 16px;
 	display: flex;
@@ -160,9 +160,9 @@ page {
 	margin-top: 4px;
 }
 .avatar-img {
-	width: 60px;
-	height: 60px;
-	border-radius: 60px;
+	width: 70px;
+	height: 70px;
+	border-radius: 70px;
 	margin-right: 16px;
 }
 .bottom-text {
