@@ -3,7 +3,8 @@
 	<view class="email-config-wrap">
 		<uni-easyinput prefixIcon="email" :maxlength="40" :styles="styles" v-model="email" :disabled="!editable" :clearable="false" placeholder="请输入邮箱"></uni-easyinput>
 		<view class="tips">每30天可修改一次邮箱，请谨慎提交。<text v-if="editable && emailTime">上次修改时间为{{ emailTime }}</text><text v-if="!editable">距下次修改时间还剩{{ restDay }}天</text></view>
-        <button class="save-btn" type="buy" :disabled="!email || !editable" @click="save">提交</button>
+        <button class="save-btn" type="buy" :disabled="!email || !editable || email === userEmail" @click="save">提交</button>
+		<view class="question-link" @click="toQuestionPage"><text>如何在微信收到邮件通知</text><uni-icons type="help" size="18" color="#628dd1"></uni-icons></view>
 	</view>
 </template>
 
@@ -52,6 +53,12 @@ const save = async () => {
 	}
 }
 
+const toQuestionPage = () => {
+	uni.navigateTo({
+		url: '/pages/mine/sub-pages/email-question',
+	})
+}
+
 watch(userEmail, (value) => {
 	if (value) {
 		email.value = userEmail.value
@@ -81,6 +88,17 @@ onMounted(() => {
 	margin: 36px 24px 0 24px;
 	border-radius: 50px;
 	font-size: 15px;
+}
+.question-link {
+	font-size: 12px;
+	color: #628dd1;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	margin: 12px 24px 0 24px;
+}
+.question-link text {
+	margin-right: 2px;
 }
 </style>
 

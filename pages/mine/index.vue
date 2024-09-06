@@ -24,13 +24,12 @@
 					<view class="card-user-time" v-else-if="isProExpire">此账户未开通邮件通知功能</view>
 					<view class="card-user-time" v-else-if="USER_INFO.proTime">邮件通知将于 {{USER_INFO.proTime.slice(0, 10)}} 到期</view>
 					<view class="card-user-time" v-else>邮件通知将于9999-12-31到期</view>
-					<!-- <view class="card-user-tips" v-if="isProExpire">联系我们开通 <uni-icons color="#999" type="right" size="12"></uni-icons></view> -->
-					<view class="card-user-tips">安装电脑端，开启邮件通知以及更多功能 <uni-icons color="#999" type="right" size="12"></uni-icons></view>
+					<view class="card-user-tips" v-if="isProExpire">安装电脑端，联系我们开启邮件通知 <uni-icons color="#999" type="right" size="12"></uni-icons></view>
+					<view class="card-user-tips" v-else>安装电脑端，开启邮件通知以及更多功能 <uni-icons color="#999" type="right" size="12"></uni-icons></view>
 				</view>
 				<view class="pro-btn">
 					<view class="pro-icon" :style="{ backgroundImage: `url(${base64.pro})` }"></view>
 					<text v-if="!isLogin">登录</text>
-					<text v-else-if="isProExpire">开通</text>
 					<text v-else>前往</text>
 				</view>
 			</view>

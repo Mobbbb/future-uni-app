@@ -54,6 +54,12 @@ const setClipboardData = (value, msg) => {
 	}
 }
 
+if (uni.setBackgroundColor) {
+	uni.setBackgroundColor({
+	    backgroundColor: '#1e2024',
+	})
+}
+
 onMounted(async () => {
 	const result = await fetchAppVersion()
 	const { data } = result || {}
@@ -64,20 +70,14 @@ onMounted(async () => {
 
 </script>
 
-<!-- #ifdef MP-WEIXIN -->
 <style>
 page {
 	background: linear-gradient(134deg, #21232b, #17171f 17%, #191b22 42%, #181b1f);
 	overflow-y: scroll;
 }
 </style>
-<!-- #endif -->
 
 <style scoped lang="scss">
-page {
-	background: linear-gradient(134deg, #21232b, #17171f 17%, #191b22 42%, #181b1f);
-	overflow-y: scroll;
-}
 .guide {
 	padding: $page-padding;
 }

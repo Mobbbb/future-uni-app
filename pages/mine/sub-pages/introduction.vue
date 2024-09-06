@@ -55,13 +55,6 @@ const openIndex = ref('0')
 
 </script>
 
-<style lang="scss">
-page {
-	background-color: $base-background-color;
-	overflow-y: scroll;
-}
-</style>
-
 <style>
 .introduction .uni-collapse-item__title-text {
 	font-size: 16px;
