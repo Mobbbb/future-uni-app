@@ -46,12 +46,12 @@
 						</view>
 						{{ barParams[0] && barParams[0].dimensionNames[1] || '' }}
 						<text style="font-weight: bold;margin-left: 4px;" :style="{ color: barParams[0] && barParams[0].data[1] > 0 ? fillColor[0] : fillColor[1] }">
-							{{ Math.round(barParams[0] && barParams[0].data[1]) }}
+							{{ Math.round(barParams[0] && barParams[0].data[1]) || 0 }}
 						</text>
 						<view style="width: 6px;height: 6px;border-radius: 10px;margin: 0 4px 0 12px;" :style="{ background: fillColor[2] }"></view>
-						{{ barParams[0] && barParams[0].dimensionNames[2] }}
+						{{ barParams[0] && barParams[0].dimensionNames[2] || '' }}
 						<text style="font-weight: bold;margin-left: 4px;" :style="{ color: barParams[0] && barParams[0].data[1] > 0 ? fillColor[0] : fillColor[1] }">
-							{{ barParams[0] && barParams[0].data[2].toFixed(2) }}%
+							{{ barParams[0] && (barParams[0].data[2].toFixed(2) + '%') || 0 }}
 						</text>    
 					</view>
 				</view>

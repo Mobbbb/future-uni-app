@@ -58,6 +58,12 @@
 					"style": {
 						"navigationStyle": "custom"
 					}
+				},
+				{
+					"path": "email-question",
+					"style": {
+						"navigationStyle": "custom"
+					}
 				}
 			]
 		}
