@@ -3,12 +3,13 @@
 	<view class="guide">
 		<view class="table-wrap">
 			<view class="authority authority1 even_row">电脑端</view>
-			<view class="authority authority2">实时语音播报</view>
-			<view class="authority authority3 even_row">图标闪烁提示</view>
-			<view class="authority authority4">消息通知提醒</view>
-			<view class="authority authority5 even_row">邮件通知</view>
-			<view class="authority authority6">单边监控</view>
-			<view class="authority authority7 even_row">套利监控</view>
+			<view class="authority authority8">同步期货市场监控中心数据</view>
+			<view class="authority authority2 even_row">实时语音播报</view>
+			<view class="authority authority3">图标闪烁提示</view>
+			<view class="authority authority4 even_row">消息通知提醒</view>
+			<view class="authority authority5">邮件通知</view>
+			<view class="authority authority6 even_row">单边监控</view>
+			<view class="authority authority7">套利监控</view>
 		</view>
 		<view class="copy-btn-wrap">
 			<view class="half-width reach-me" @click="showReachMe = true">
@@ -137,6 +138,9 @@ page {
 }
 .authority7:before {
     content: '套利监控';
+}
+.authority8:before {
+    content: '同步期货市场监控中心数据';
 }
 .even_row {
 	background: rgba(0, 0, 0, .1);

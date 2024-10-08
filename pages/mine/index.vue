@@ -15,7 +15,7 @@
 			<view class="default-avatar-wrap">
 				<uni-icons color="#656565" type="person-filled" size="30"></uni-icons>
 			</view>
-			<view class="login-text">登录</view>
+			<view class="login-text">登录/注册</view>
 		</view>
 		<view class="mine-card-wrap">
 			<view class="insert-card-wrap" :style="{ backgroundImage: `url(${base64.userBg})` }" @click="toGuidePage">

@@ -424,6 +424,11 @@
     /* #ifdef APP-NVUE */
     width: 750rpx;
     /* #endif */
+	
+	/*-- CUSTOMIZED bottom 调整 */
+	/* #ifndef APP-NVUE */
+	bottom: calc(var(--window-bottom));
+	/* #endif */
   }
 
   .dialog-caption {

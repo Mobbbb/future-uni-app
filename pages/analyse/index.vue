@@ -1,7 +1,7 @@
 <!--交易 -> 账户分析-->
 <template>
 	<ux-nav :showBack="false" :background="topBg.header">账户分析</ux-nav>
-    <view class="future-wrap">
+    <scroll-view :style="contentStyle" :scroll-y="true" :refresher-enabled="true" :refresher-triggered="refresherTriggered" @refresherrefresh="pullLoad">
         <view class="analyse-content-wrap">
             <view :style="topBg.bottom">
                 <view class="total-analyse-wrap">
@@ -228,14 +228,15 @@
                 </view>
 				<view id="lineChart"><l-echart ref="lineChart"></l-echart></view>
             </uni-card>
+			<ux-block></ux-block>
         </view>
-    </view>
+    </scroll-view>
 </template>
 
 <script setup>
 import { ref, reactive, computed, watch, onMounted, onBeforeUnmount, nextTick, getCurrentInstance } from 'vue'
 import { useStore } from 'vuex'
-import { parseDateParams, getGapDate, getMonthShortcuts } from '@/utils'
+import { parseDateParams, getGapDate, getMonthShortcuts, getMenuButtonBoundingClientRect } from '@/utils'
 import festivalMap, { festivalList } from '@/config/festivalMap'
 import { getBarOption, getDoubleKLineOption, fillColor } from './option'
 import MonthlyCalendar from '@/components/monthly-calendar.vue'
@@ -254,6 +255,8 @@ import * as echarts from 'echarts'
 
 const store = new useStore()
 
+const menuButtonInfo = getMenuButtonBoundingClientRect()
+const contentStyle = `height: calc(100% - ${menuButtonInfo.navBarHeight + menuButtonInfo.statusBarHeight}px)`
 const K_LINE_DATE_KEY_NAME = computed(() => `K-LINE-DATE-${store.state.app.USER_INFO.userId}`)
 
 let barChartIns = null
@@ -363,37 +366,42 @@ function addZero(num) {
 const selectCalendar = async (data) => {
 	calendarDate.value = `${data.lunar.cYear}-${addZero(data.lunar.cMonth)}`
 	
-	initDayCalendar()
+	initCalendar()
 }
 
-const initCalendar = async (date) => {
+const initCalendar = async (force = false) => {
     if (!isLogin.value) return
     let dateRange = []
     if (dayCalendarShowStatus.value) {
-        const dateParam = date && dateFormat(date) || calendarDate.value
+        const dateParam = calendarDate.value
         const day = new Date(dateParam.slice(0, 4), dateParam.slice(5, 7), 0).getDate()
         dateRange = [dateParam.slice(0, 7) + '-01', `${dateParam.slice(0, 7)}-${day}`]
     } else {
-        const year = date || new Date(calendarYear.value).getFullYear()
+        const year = new Date(calendarYear.value).getFullYear()
         dateRange = [`${year}-01-01`, `${year}-12-31`]
     }
 
     const yearMothKey = `${dateRange[1].slice(0, 7)}-status`
     const yearKey = `${dateRange[1].slice(0, 4)}-status`
-    if (calendarDataMap.value[yearMothKey] && dayCalendarShowStatus.value) return // 如果该月份数据已获取，不再重新请求
-    if (calendarDataMap.value[yearKey] && !dayCalendarShowStatus.value) return // 如果该年份数据已获取，不再重新请求
+	// 如果该月份数据已获取，不再重新请求
+	// 如果该年份数据已获取，不再重新请求
+	if ((!calendarDataMap.value[yearMothKey] && dayCalendarShowStatus.value) || (!calendarDataMap.value[yearKey] && !dayCalendarShowStatus.value) || force) {
+		calendarLoadingStatus.value = true
+		const params = parseDateParams(dateRange)
+		const result = await getCloseFutureByDate(params)
+		calendarLoadingStatus.value = false
+		
+		formatCalendarData(result, {
+		    calendarDataMap: calendarDataMap.value,
+		    dayCalendarShowStatus: dayCalendarShowStatus.value,
+		    yearMothKey,
+		    yearKey,
+		})
+	}
 
-    calendarLoadingStatus.value = true
-    const params = parseDateParams(dateRange)
-    const result = await getCloseFutureByDate(params)
-    calendarLoadingStatus.value = false
-
-    formatCalendarData(result, {
-        calendarDataMap: calendarDataMap.value,
-        dayCalendarShowStatus: dayCalendarShowStatus.value,
-        yearMothKey,
-        yearKey,
-    })
+    if (dayCalendarShowStatus.value) {
+		getSelectedCalendarData()
+	}
 }
 
 const initDayLineChart = async () => {
@@ -463,7 +471,7 @@ const changeCalendarDate = async (num) => {
         calendarDate.value = calculateDate(calendarDate.value, num)
     }
 
-	initDayCalendar()
+	initCalendar()
 }
 
 const changeCalendarYear = (value) => {
@@ -548,24 +556,13 @@ const changeCalendarDim = () => {
 const drillingMonthCalendar = (value) => {
     dayCalendarShowStatus.value = true
     calendarDate.value = value.day
-    initDayCalendar()
+    initCalendar()
 }
 
-const initAnalyseData = () => {
-    initBasicInfo()
-    initDayCalendar()
-    initDayLineChart()
-}
-
-const getDataWhileActive = () => {
-    if (isLogin.value) {
-        initAnalyseData()
-    }
-}
-
-const initDayCalendar  = async () => {
-	await initCalendar()
-	getSelectedCalendarData()
+const initAnalyseData = async () => {
+	if (isLogin.value) {
+		await Promise.all([initBasicInfo(), initCalendar(true), initDayLineChart()])
+	}
 }
 
 onShareAppMessage(() => {
@@ -580,9 +577,16 @@ onShareAppMessage(() => {
 	})
 })
 
+const refresherTriggered = ref(false)
+const pullLoad = async () => {
+	refresherTriggered.value = true
+	await initAnalyseData()
+	refresherTriggered.value = false
+}
+
 watch(isLogin, (value) => {
     if (value) {
-        getDataWhileActive()
+        initAnalyseData()
     } else {
         closeFutureLists.value = [] // 清空数据
         calendarDataMap.value = {} // 清空数据
@@ -591,9 +595,15 @@ watch(isLogin, (value) => {
 })
 
 onMounted(() => {
-    getDataWhileActive()
+    initAnalyseData()
 })
 </script>
+
+<style lang="scss">
+page {
+	height: 100%;
+}
+</style>
 
 <style scoped>
 .search-input-wrap {

@@ -1,61 +1,63 @@
 <!--交易 -> 下单页-->
 <template>
-    <view class="future-wrap">
-        <view class="form-wrap" ref="formWrap">
-            <uni-forms 
-                :modelValue="formData"
-                :rules="rules" 
-                label-width="95px" 
-                label-position="left"
-                ref="ruleFormRef">
-                <uni-forms-item required label="交易日期" name="date">
-					<uni-datetime-picker type="datetime" :clear-icon="false" v-model="formData.date" placeholder="请选择日期" />
-                </uni-forms-item>
-                <uni-forms-item required label="合约" name="name">
-					<uni-data-picker v-model="formData.name" :clear-icon="false" :localdata="futuresTree" popup-title="请选择合约" @change="selectOrderTree"></uni-data-picker>
-                </uni-forms-item>
-                <uni-forms-item required label="成交价" name="price">
-					<uni-number-box v-model="formData.price" style="width: 180px;" placeholder="请输入成交价" ></uni-number-box>
-                </uni-forms-item>
-                <uni-forms-item required label="手数" name="hands">
-					<uni-number-box v-model="formData.hands" style="width: 180px;" placeholder="请输入手数" ></uni-number-box>
-                </uni-forms-item>
-            </uni-forms>
-            <view style="padding-bottom: 12px;">
-                <button style="margin-right: 4px;" size="mini" type="buy" @click="submitHandle(1, 1)">买入</button>
-                <button style="margin-right: 4px;" size="mini" type="sale" @click="submitHandle(0, 1)">卖出</button>
-                <button style="margin-right: 4px;" type="info" size="mini" :disabled="!buySaleListNum.buyListNum" @click="submitHandle(0, 0)">平多</button>
-                <button style="margin-right: 4px;" type="info" size="mini" :disabled="!buySaleListNum.saleListNum" @click="submitHandle(1, 0)">平空</button>
-            </view>
-            <view class="recently-tag-wrap" v-if="recentlyFeatureNames.length">
-                <text style="margin-bottom: 8px;">最近合约：</text>
-                <view class="order-name-label" v-for="item in recentlyFeatureNames" @click="selectOrderName(item)" :key="item">{{item}}</view>
-            </view>
-        </view>
-        <ux-table fixed="left" :data="openingOrderList">
-			<uni-table border emptyText="">
-				<uni-tr>
-					<uni-th prop="name" label="合约" width="70" fixed="left">合约</uni-th>
-					<uni-th prop="buyOrSale" width="60" label="多/空">多/空</uni-th>
-					<uni-th prop="price" minWidth="90" label="开仓均价">开仓均价</uni-th>
-					<uni-th prop="hands" label="手数">手数</uni-th>
-					<uni-th prop="commission" width="120" label="开仓总手续费">开仓总手续费</uni-th>
-				</uni-tr>
-				<uni-tr v-for="(item, index) in openingOrderList" :key="index" @row-click="orderRowClick(item)">
-					<uni-td>{{ item.name }}</uni-td>
-					<uni-td>
-						<text :style="item.buyOrSale ? { color: '#eb4436' } : { color: '#0e9d58' }">
-							{{item.buyOrSale ? '多' : '空'}}
-						</text>
-					</uni-td>
-					<uni-td>{{ item.price }}</uni-td>
-					<uni-td>{{ item.hands }}</uni-td>
-					<uni-td>{{ item.commission }}</uni-td>
-				</uni-tr>
-			</uni-table>
-		</ux-table>
-		<view class="home-chart" v-if="isLogin"><l-echart ref="chartRef"></l-echart></view>
-    </view>
+    <scroll-view style="height: 100%;" :scroll-y="true" :refresher-enabled="true" :refresher-triggered="refresherTriggered" @refresherrefresh="pullLoad">
+		<view class="future-wrap">
+			<view class="form-wrap" ref="formWrap">
+				<uni-forms 
+					:modelValue="formData"
+					:rules="rules" 
+					label-width="95px" 
+					label-position="left"
+					ref="ruleFormRef">
+					<uni-forms-item required label="交易日期" name="date">
+						<uni-datetime-picker type="datetime" :clear-icon="false" v-model="formData.date" placeholder="请选择日期" />
+					</uni-forms-item>
+					<uni-forms-item required label="合约" name="name">
+						<uni-data-picker v-model="formData.name" :clear-icon="false" :localdata="futuresTree" popup-title="请选择合约" @change="selectOrderTree"></uni-data-picker>
+					</uni-forms-item>
+					<uni-forms-item required label="成交价" name="price">
+						<uni-number-box v-model="formData.price" style="width: 180px;" placeholder="请输入成交价" ></uni-number-box>
+					</uni-forms-item>
+					<uni-forms-item required label="手数" name="hands">
+						<uni-number-box v-model="formData.hands" style="width: 180px;" placeholder="请输入手数" ></uni-number-box>
+					</uni-forms-item>
+				</uni-forms>
+				<view style="padding-bottom: 12px;">
+					<button style="margin-right: 4px;" size="mini" type="buy" @click="submitHandle(1, 1)">买入</button>
+					<button style="margin-right: 4px;" size="mini" type="sale" @click="submitHandle(0, 1)">卖出</button>
+					<button style="margin-right: 4px;" type="info" size="mini" :disabled="!buySaleListNum.buyListNum" @click="submitHandle(0, 0)">平多</button>
+					<button style="margin-right: 4px;" type="info" size="mini" :disabled="!buySaleListNum.saleListNum" @click="submitHandle(1, 0)">平空</button>
+				</view>
+				<view class="recently-tag-wrap" v-if="recentlyFeatureNames.length">
+					<text style="margin-bottom: 8px;">最近合约：</text>
+					<view class="order-name-label" v-for="item in recentlyFeatureNames" @click="selectOrderName(item)" :key="item">{{item}}</view>
+				</view>
+			</view>
+			<ux-table fixed="left" :data="openingOrderList">
+				<uni-table border emptyText="">
+					<uni-tr>
+						<uni-th prop="name" label="合约" width="70" fixed="left">合约</uni-th>
+						<uni-th prop="buyOrSale" width="60" label="多/空">多/空</uni-th>
+						<uni-th prop="price" minWidth="90" label="开仓均价">开仓均价</uni-th>
+						<uni-th prop="hands" label="手数">手数</uni-th>
+						<uni-th prop="commission" width="120" label="开仓总手续费">开仓总手续费</uni-th>
+					</uni-tr>
+					<uni-tr v-for="(item, index) in openingOrderList" :key="index" @row-click="orderRowClick(item)">
+						<uni-td>{{ item.name }}</uni-td>
+						<uni-td>
+							<text :style="item.buyOrSale ? { color: '#eb4436' } : { color: '#0e9d58' }">
+								{{item.buyOrSale ? '多' : '空'}}
+							</text>
+						</uni-td>
+						<uni-td>{{ item.price }}</uni-td>
+						<uni-td>{{ item.hands }}</uni-td>
+						<uni-td>{{ item.commission }}</uni-td>
+					</uni-tr>
+				</uni-table>
+			</ux-table>
+			<view class="home-chart" v-if="isLogin" @touchmove.stop><l-echart ref="chartRef"></l-echart></view>
+		</view>
+    </scroll-view>
 </template>
 
 <script setup>
@@ -73,9 +75,7 @@ const echarts = require('../../uni_modules/lime-echart/static/echarts.min')
 import * as echarts from 'echarts'
 // #endif
 
-
-const futuresNum = 6
-
+const futuresNum = 11
 const chartRef = ref(null)
 const date = new Date()
 const store = new useStore()
@@ -165,9 +165,9 @@ const futuresTree = computed(() => {
             month = 1
         }
         if (month < 10) {
-            dateList.unshift(`${year}0${month}`)
+            dateList.push(`${year}0${month}`)
         } else {
-            dateList.unshift(`${year}${month}`)
+            dateList.push(`${year}${month}`)
         }
     }
 
@@ -186,14 +186,6 @@ const futuresTree = computed(() => {
 		})
     })
     return list
-})
-
-const futuresConfigListMap = computed(() => {
-    const obj = {}
-    futuresList.value.forEach(item => {
-        obj[item.name.toLowerCase()] = item.name
-    })
-    return obj
 })
 
 const buySaleListNum = computed(() => {
@@ -243,7 +235,7 @@ const selectOrderName = (name) => {
 
 const selectOrderTree = (treeItem) =>{
 	const { detail = [] } = treeItem
-	formData.name = detail.value.map(item => item.value).join('')
+	formData.name = detail.value[1] && detail.value[1].value || ''
 	uni.setStorageSync('default-order-name', formData.name)
 }
 
@@ -284,6 +276,13 @@ const initOpeningAndRecentlyFeature = async () => {
 	}
 }
 
+const refresherTriggered = ref(false)
+const pullLoad = async (e) => {
+	refresherTriggered.value = true
+	await initOpeningAndRecentlyFeature()
+	refresherTriggered.value = false
+}
+
 watch(isLogin, async (value) => {
     if (value) {
         initOpeningAndRecentlyFeature()
@@ -302,9 +301,14 @@ onMounted(async () => {
     } else {
         formData.name = futuresConfigList.value[0] && futuresConfigList.value[0][0] || ''
     }
-	
 })
 </script>
+
+<style lang="scss">
+page {
+	height: 100%;
+}
+</style>
 
 <style scoped lang="scss">
 .future-wrap {

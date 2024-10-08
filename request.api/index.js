@@ -22,6 +22,14 @@ export const fetchUserLogin = (uid, password) => {
     })
 }
 
+export const fetchUserRegister = (uid, password) => {
+    return axios.request({
+        url: prefixApi + '/user/register',
+        method: 'post',
+        data: { uid, password },
+    })
+}
+
 export const fetchUserInfo = () => {
     return axios.request({
         url: prefixApi + '/user/info',
