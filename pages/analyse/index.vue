@@ -1,7 +1,7 @@
 <!--交易 -> 账户分析-->
 <template>
 	<ux-nav :showBack="false" :background="topBg.header">账户分析</ux-nav>
-    <scroll-view :style="contentStyle" :scroll-y="true" :refresher-enabled="true" :refresher-triggered="refresherTriggered" @refresherrefresh="pullLoad">
+    <ux-pull :scrollTop="scrollTop" @on-pull-end="pullLoad">
         <view class="analyse-content-wrap">
             <view :style="topBg.bottom">
                 <view class="total-analyse-wrap">
@@ -230,7 +230,7 @@
             </uni-card>
 			<ux-block></ux-block>
         </view>
-    </scroll-view>
+    </ux-pull>
 </template>
 
 <script setup>
@@ -243,7 +243,7 @@ import MonthlyCalendar from '@/components/monthly-calendar.vue'
 import { dateFormat, calculateDate, toMonth, dateGap } from '@/utils/umob.js'
 import { formatPriceLineData, formatBasicData, formatCalendarData } from '@/utils/data-processing.js'
 import { fetchOrderInfoHandle } from '@/request.api/index.js'
-import { onShareAppMessage } from '@dcloudio/uni-app'
+import { onShareAppMessage, onPageScroll } from '@dcloudio/uni-app'
 
 // #ifdef MP-WEIXIN
 const echarts = require('../../uni_modules/lime-echart/static/echarts.min')
@@ -256,7 +256,6 @@ import * as echarts from 'echarts'
 const store = new useStore()
 
 const menuButtonInfo = getMenuButtonBoundingClientRect()
-const contentStyle = `height: calc(100% - ${menuButtonInfo.navBarHeight + menuButtonInfo.statusBarHeight}px)`
 const K_LINE_DATE_KEY_NAME = computed(() => `K-LINE-DATE-${store.state.app.USER_INFO.userId}`)
 
 let barChartIns = null
@@ -577,11 +576,11 @@ onShareAppMessage(() => {
 	})
 })
 
-const refresherTriggered = ref(false)
-const pullLoad = async () => {
-	refresherTriggered.value = true
+const scrollTop = ref(0)
+onPageScroll(e => scrollTop.value = e.scrollTop)
+const pullLoad = async (next) => {
 	await initAnalyseData()
-	refresherTriggered.value = false
+	next()
 }
 
 watch(isLogin, (value) => {

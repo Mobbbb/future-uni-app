@@ -94,6 +94,9 @@
 
 				setPointMargin(ins, pointGap)
 				ins.selectComponent('#pull-container').setStyle({ transform: 'translateY(' + pullInfo.slowY + 'px)' })
+				
+				// 阻止默认事件和冒泡，否则安卓会有触发频率限制
+				return false
 			}
 		}
 		if (isIos) {
@@ -117,6 +120,9 @@
 				transform: 'translateY(0)',
 				transition: 'transform .3s ease',
 			})
+			ins.setTimeout(function() {
+				ins.selectComponent('#pull-container').setStyle({}) // 移除transform属性，否则会使子元素的position: fixed失效
+			}, 300)
 		}
 		count = 0
 		pullInfo.deltaY = 0
@@ -134,7 +140,10 @@
 			transform: 'translateY(0)',
 			transition: 'transform .3s ease',
 		})
-		lock = false
+		ins.setTimeout(function() {
+			ins.selectComponent('#pull-container').setStyle({}) // 移除transform属性，否则会使子元素的position: fixed失效
+			lock = false
+		}, 300)
 	}
 	
 	function setPointMargin(ins, margin) {

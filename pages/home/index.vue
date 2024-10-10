@@ -1,6 +1,6 @@
 <!--交易 -> 下单页-->
 <template>
-    <scroll-view style="height: 100%;" :scroll-y="true" :refresher-enabled="true" :refresher-triggered="refresherTriggered" @refresherrefresh="pullLoad">
+    <ux-pull :scrollTop="scrollTop" @on-pull-end="pullLoad">
 		<view class="future-wrap">
 			<view class="form-wrap" ref="formWrap">
 				<uni-forms 
@@ -57,7 +57,7 @@
 			</ux-table>
 			<view class="home-chart" v-if="isLogin" @touchmove.stop><l-echart ref="chartRef"></l-echart></view>
 		</view>
-    </scroll-view>
+    </ux-pull>
 </template>
 
 <script setup>
@@ -66,6 +66,7 @@ import { useStore } from 'vuex'
 import { fetchInsertOrder, fetchRecentlyFeature } from '@/request.api'
 import { getOrderLineOption } from './option'
 import { dateFormat } from '@/utils/umob.js'
+import { onPageScroll } from '@dcloudio/uni-app'
 
 // #ifdef MP-WEIXIN
 const echarts = require('../../uni_modules/lime-echart/static/echarts.min')
@@ -276,11 +277,11 @@ const initOpeningAndRecentlyFeature = async () => {
 	}
 }
 
-const refresherTriggered = ref(false)
-const pullLoad = async (e) => {
-	refresherTriggered.value = true
+const scrollTop = ref(0)
+onPageScroll(e => scrollTop.value = e.scrollTop)
+const pullLoad = async (next) => {
 	await initOpeningAndRecentlyFeature()
-	refresherTriggered.value = false
+	next()
 }
 
 watch(isLogin, async (value) => {
