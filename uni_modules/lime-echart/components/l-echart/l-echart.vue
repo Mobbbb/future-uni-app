@@ -142,7 +142,9 @@ export default {
 			return `width:${this.offscreenWidth}px;height: ${this.offscreenHeight}px; position: fixed; left: 99999px; background: red`
 		},
 		canvasStyle() {
-			return  this.width && this.height ? ('width:' + this.width + 'px;height:' + this.height + 'px') : ''
+			const width = typeof this.width === 'number' ? this.width + 'px' : this.width
+			const height = typeof this.height === 'number' ? this.height + 'px' : this.height
+			return  this.width && this.height ? ('width:' + width + ';height:' + this.height) : ''
 		}
 	},
 	// #ifndef VUE3
@@ -260,8 +262,8 @@ export default {
 						.exec(res => {
 							if (res) {
 								let { width, height } = res[0];
-								this.width = width = width || 300;
-								this.height = height = height || 300;
+								this.width = width = width || '100%';
+								this.height = height = height || '100%';
 								this.chart.resize({width, height})
 							}
 						});
@@ -369,8 +371,8 @@ export default {
 					let dpr = devicePixelRatio
 					let {width, height, node} = res
 					let canvas;
-					this.width = width = width || 300;
-					this.height = height = height || 300;
+					this.width = width = width || '100%';
+					this.height = height = height || '100%';
 					if(node) {
 						const ctx = node.getContext('2d');
 						canvas = new Canvas(ctx, this, true, node);
@@ -389,8 +391,8 @@ export default {
 						dpr = 1
 						// #endif
 						this.rect = res
-						this.nodeWidth = width * dpr;
-						this.nodeHeight = height * dpr;
+						this.nodeWidth = typeof width === 'number' ? width * dpr : width;
+						this.nodeHeight = typeof height === 'number' ? height * dpr : height;
 						const ctx = uni.createCanvasContext(this.canvasId, this);
 						canvas =  new Canvas(ctx, this, false);
 					}

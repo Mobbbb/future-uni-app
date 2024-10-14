@@ -16,7 +16,7 @@
 			</slot>
 		</view>
 
-		<Calendar ref="mobile" :insert="false" :active-date="displayValue" :year="paneYear" :showNumber="true" @on-click="calendarClick">
+		<Calendar @close="closeHandle" ref="mobile" :insert="false" :active-date="displayValue" :year="paneYear" :showNumber="true" @on-click="calendarClick">
 			<template #header>
 				<view class="uni-calendar__header uni-calendar__header-mobile">
 					<view class="uni-calendar__header-btn-box" @click.stop="changeYearByStep(-1)">
@@ -32,8 +32,8 @@
 					</view>
 				
 					<view class="dialog-close" @click="maskClick">
-						<view class="dialog-close-plus" data-id="close"></view>
-						<view class="dialog-close-plus dialog-close-rotate" data-id="close"></view>
+						<view class="dialog-close-plus"></view>
+						<view class="dialog-close-plus dialog-close-rotate"></view>
 					</view>
 				</view>
 			</template>
@@ -197,7 +197,7 @@
 				}
 			},
 			show() {
-				this.$emit("show")
+				this.$emit("on-show")
 				if (this.disabled) {
 					return
 				}
@@ -211,7 +211,9 @@
 					this.$refs.mobile && this.$refs.mobile.close()
 				}, 20)
 			},
-
+			closeHandle() {
+				this.$emit('on-close')
+			},
 			clear(needEmit = true) {
 				this.displayValue = ''
 				this.inputDate = ''

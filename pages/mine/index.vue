@@ -84,7 +84,7 @@ const avatarImg = computed(() => {
 })
 
 const setLoginDrawerStatus = (status) => store.commit('app/setLoginDrawerStatus', status)
-const logoutAction = () => store.dispatch('app/logoutAction')
+const logoutImmAction = () => store.dispatch('app/logoutImmAction')
 
 const toGuidePage = () => {
 	if (!isLogin.value) {
@@ -101,7 +101,7 @@ const login = () => {
 }
 
 const logout = () => {
-	logoutAction()
+	logoutImmAction()
 }
 
 const setClipboardData = (value) => {

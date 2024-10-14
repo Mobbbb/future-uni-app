@@ -98,7 +98,7 @@
 			:start-date="calendarRange.startDate" :end-date="calendarRange.endDate" :selectableTimes="mobSelectableTime"
 			:startPlaceholder="startPlaceholder" :endPlaceholder="endPlaceholder" :default-value="defaultValue"
 			:pleStatus="endMultipleStatus" :showMonth="false" :range="isRange" :hasTime="hasTime" :insert="false"
-			:hideSecond="hideSecond" @confirm="mobileChange" @maskClose="close" @change="calendarClick"/>
+			:hideSecond="hideSecond" @confirm="mobileChange" @close="closeHandle" @maskClose="close" @change="calendarClick"/>
 	</view>
 </template>
 <script>
@@ -517,8 +517,13 @@
 				setTimeout(() => {
 					this.pickerVisible = false
 					this.$emit('maskClick', this.value)
-					this.$refs.mobile && this.$refs.mobile.close()
+					/*-- CUSTOMIZED remove redundant close */
+					// this.$refs.mobile && this.$refs.mobile.close()
 				}, 20)
+			},
+			/*-- CUSTOMIZED emit close handle */
+			closeHandle() {
+				this.$emit('on-close')
 			},
 			setEmit(value) {
 				if (this.returnType === "timestamp" || this.returnType === "date") {
@@ -667,7 +672,8 @@
 					}
 					this.setEmit(this.displayValue)
 				}
-				this.$refs.mobile.close()
+				/*-- CUSTOMIZED remove redundant close */
+				// this.$refs.mobile.close()
 			},
 			rangeChange(before, after) {
 				if (!(before && after)) return

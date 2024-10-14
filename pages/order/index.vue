@@ -5,9 +5,9 @@
         <view class="search-wrap">
             <view class="search-item-wrap">
                 <text>起止日期：</text>
-				<ux-icon right="6" type="left" size="16" @click="selectDate(-1)"></ux-icon>
+				<view class="fit-parent pr-6" @click="selectDate(-1)"><ux-icon type="left" size="16"></ux-icon></view>
 				<uni-datetime-picker type="daterange" v-model="searchParams.date" @change="selectDate" :clear-icon="false" placeholder="请选择日期" />
-				<ux-icon left="6" type="right"size="16" @click="selectDate(1)"></ux-icon>
+				<view class="fit-parent pl-6" @click="selectDate(1)"><ux-icon type="right"size="16"></ux-icon></view>
             </view>
             <view class="search-item-wrap">
                 <text>合约名：</text>

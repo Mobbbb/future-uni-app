@@ -133,15 +133,18 @@ const app = {
             }
         },
         logoutAction({ commit, dispatch }) {
-            dispatch('removeLoginStorage')
-            commit('SET_USER_INFO', {})
-            delCookie('future-uid')
-            delCookie('future-token')
+            dispatch('logoutImmAction')
             setTimeout(() => {
                 uni.switchTab({
                     url: '/pages/mine/index',
                 })
             }, 1000)
+        },
+        logoutImmAction({ commit, dispatch }) {
+            dispatch('removeLoginStorage')
+            commit('SET_USER_INFO', {})
+            delCookie('future-uid')
+            delCookie('future-token')
         },
         saveLoginStatus({}, data) {
             const { uid, avatar, cookies } = data

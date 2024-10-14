@@ -1,6 +1,8 @@
 <!--交易 -> 下单页-->
 <template>
-    <ux-pull :scrollTop="scrollTop" @on-pull-end="pullLoad">
+    <page-meta :page-style="preventScrollAndPull ? 'overflow-y: hidden' : 'overflow-y: scroll'"></page-meta>
+    <ux-nav :showBack="false"></ux-nav>
+    <ux-pull :disabled="preventScrollAndPull" :scrollTop="scrollTop" @on-pull-end="pullLoad">
 		<view class="future-wrap">
 			<view class="form-wrap" ref="formWrap">
 				<uni-forms 
@@ -10,10 +12,10 @@
 					label-position="left"
 					ref="ruleFormRef">
 					<uni-forms-item required label="交易日期" name="date">
-						<uni-datetime-picker type="datetime" :clear-icon="false" v-model="formData.date" placeholder="请选择日期" />
+						<uni-datetime-picker @on-close="onClose" @show="onShow" type="datetime" :clear-icon="false" v-model="formData.date" placeholder="请选择日期" />
 					</uni-forms-item>
 					<uni-forms-item required label="合约" name="name">
-						<uni-data-picker v-model="formData.name" :clear-icon="false" :localdata="futuresTree" popup-title="请选择合约" @change="selectOrderTree"></uni-data-picker>
+						<uni-data-picker @popupclosed="onClose" @popupopened="onShow" v-model="formData.name" :clear-icon="false" :localdata="futuresTree" popup-title="请选择合约" @change="selectOrderTree"></uni-data-picker>
 					</uni-forms-item>
 					<uni-forms-item required label="成交价" name="price">
 						<uni-number-box v-model="formData.price" style="width: 180px;" placeholder="请输入成交价" ></uni-number-box>
@@ -55,7 +57,7 @@
 					</uni-tr>
 				</uni-table>
 			</ux-table>
-			<view class="home-chart" v-if="isLogin" @touchmove.stop><l-echart ref="chartRef"></l-echart></view>
+			<view class="home-chart" v-show="isLogin" @touchmove.stop><l-echart ref="chartRef"></l-echart></view>
 		</view>
     </ux-pull>
 </template>
@@ -66,7 +68,7 @@ import { useStore } from 'vuex'
 import { fetchInsertOrder, fetchRecentlyFeature } from '@/request.api'
 import { getOrderLineOption } from './option'
 import { dateFormat } from '@/utils/umob.js'
-import { onPageScroll } from '@dcloudio/uni-app'
+import { onPullDownRefresh, onPageScroll, onTabItemTap } from '@dcloudio/uni-app'
 
 // #ifdef MP-WEIXIN
 const echarts = require('../../uni_modules/lime-echart/static/echarts.min')
@@ -278,11 +280,32 @@ const initOpeningAndRecentlyFeature = async () => {
 }
 
 const scrollTop = ref(0)
+const preventScrollAndPull = ref(false)
 onPageScroll(e => scrollTop.value = e.scrollTop)
 const pullLoad = async (next) => {
 	await initOpeningAndRecentlyFeature()
 	next()
 }
+const onShow = () => {
+	preventScrollAndPull.value = true
+}
+const onClose = () => {
+	preventScrollAndPull.value = false
+}
+
+// #ifdef H5
+let hasGotData = false
+onTabItemTap(() => {
+	if (!isLogin.value) {
+		hasGotData = false
+	} else if (!hasGotData) { // 已登录，未获取过图表
+		if (openingOrderList.value[0]) {
+			renderRowPrice(openingOrderList.value[0])
+		}
+		hasGotData = true
+	}
+})
+// #endif
 
 watch(isLogin, async (value) => {
     if (value) {
@@ -308,6 +331,7 @@ onMounted(async () => {
 <style lang="scss">
 page {
 	height: 100%;
+	overflow-y: scroll;
 }
 </style>
 

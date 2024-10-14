@@ -97,6 +97,13 @@ button[type='info'][disabled]:active {
 .alignRight {
 	text-align: right;
 }
+.fit-parent {
+	/* 子元素撑满 */
+	display: flex;
+	align-items: center;
+	align-self: stretch;
+	padding: 0 6px;
+}
 
 .future-table .uni-table-td, .future-table .uni-table-th {
 	font-size: 12px;
@@ -129,4 +136,11 @@ button[type='info'][disabled]:active {
 }
 .mb-8 {
 	margin-bottom: 8px;
+}
+
+.pl-6 {
+	padding-left: 6px;
+}
+.pr-6 {
+	padding-right: 6px;
 }

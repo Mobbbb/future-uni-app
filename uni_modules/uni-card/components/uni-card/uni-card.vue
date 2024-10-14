@@ -225,7 +225,8 @@
 			padding: $uni-card-spacing;
 			font-size: 14px;
 			color: $uni-card-content-color;
-			line-height: 22px;
+			// -- CUSTOMIZED 防止破坏内部样式
+			// line-height: 22px;
 		}
 
 		.uni-card__actions {

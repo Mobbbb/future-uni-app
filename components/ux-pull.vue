@@ -1,7 +1,8 @@
 <template>
-	<view>
+	<view class="ux-pull">
 		<view
 		    id="pull-container"
+			:data-disabled="disabled"
 			:data-is-ios="isIos"
 			:data-scroll-top="scrollTop"
 			:change:prop="wxsPullLoading.propObserver"
@@ -9,13 +10,21 @@
 		    @touchstart="wxsPullLoading.handlerStart"
 		    @touchmove="wxsPullLoading.handlerMove"
 		    @touchend="wxsPullLoading.handlerEnd">
-		    <view class="pull-head">
+			<view class="ios-pull-header" v-if="isIos">
+				<view class="ios-block"></view>
+				<view class="ios-points-wrap">
+					<view class="ios-pull-point ios-left-point flicker"></view>
+					<view class="ios-pull-point flicker"></view>
+					<view class="ios-pull-point ios-right-point flicker"></view>
+				</view>
+			</view>
+			<view class="pull-head" v-else>
 				<view class="points-wrap">
 					<view class="pull-point left-point"></view>
 					<view class="pull-point"></view>
 					<view class="pull-point right-point"></view>
 				</view>
-		    </view>
+			</view>
 		    <view class="pull-body">
 				<slot></slot>
 		    </view>
@@ -25,16 +34,16 @@
 
 <script module="wxsPullLoading" lang="wxs">
 	var pullInfo = {
-		prevY: 0,
 		startY: 0,
 		deltaY: 0,
 		slowY: 0,
 	}
-	var lock = false
 	var scrollTop = 0
-	var prevScrollTop = 0
-	var count = 0
 	var isIos = false
+	var disabled = false
+
+	var lock = false
+	var isPull = null
 
 	var maxSlideDis = 800
 	var maxMoveDis = maxSlideDis * 0.15
@@ -45,38 +54,23 @@
 
 	function handlerStart(e, ins) {
 		if (lock) return
-		pullInfo.startY = 0
+		isPull = null
+		pullInfo.startY = e.touches[0].pageY
 		pullInfo.deltaY = 0
 		pullInfo.slowY = 0
-		pullInfo.prevY = parseInt(e.touches[0].pageY)
 		var dataset = ins.selectComponent('#pull-container').getDataset()
 		scrollTop = dataset.scrollTop || 0
-		prevScrollTop = dataset.scrollTop || 0
 		isIos = dataset.isIos || false
+		disabled = dataset.disabled || false
 	}
 	function handlerMove(e, ins) {
-		if (isIos) {
-			var isDown = parseInt(e.touches[0].pageY) - pullInfo.prevY > 0
-			if (!lock && pullInfo.deltaY <= 1) {
-				scrollTop = ins.selectComponent('#pull-container').getDataset().scrollTop || 0
-			}
-			if (isDown) {
-				if (prevScrollTop === scrollTop) {
-					count ++
-				} else {
-					count = 0
-				}
-			}
-		}
-
-		if (!lock && (scrollTop <= 1 || (scrollTop > 1 && count > 6))) {
-			if (!pullInfo.startY) pullInfo.startY = e.touches[0].pageY
+		if (!lock && scrollTop <= 0 && !isIos && !disabled) {
 			pullInfo.deltaY = e.touches[0].pageY - pullInfo.startY
+			if (typeof isPull !== 'boolean') {
+				isPull = pullInfo.deltaY > 0
+			}
 
-			if (pullInfo.deltaY > 0) { // 开始拖拽
-				if (isIos) {
-					ins.callMethod('changeScrollAble', { status: false })
-				}
+			if (pullInfo.deltaY > 0 && isPull) { // 开始拖拽
 				var t = pullInfo.deltaY / maxSlideDis
 				if (t >= 1) {
 					pullInfo.slowY = maxMoveDis
@@ -94,61 +88,79 @@
 
 				setPointMargin(ins, pointGap)
 				ins.selectComponent('#pull-container').setStyle({ transform: 'translateY(' + pullInfo.slowY + 'px)' })
-				
+
 				// 阻止默认事件和冒泡，否则安卓会有触发频率限制
 				return false
 			}
 		}
-		if (isIos) {
-			pullInfo.prevY = parseInt(e.touches[0].pageY)
-			prevScrollTop = scrollTop
-		}
 	}
 	function handlerEnd(e, ins) {
-		if (lock) return
+		if (lock || disabled) return
 
-		if (pullInfo.slowY > refreshDis) {
-			lock = true
-			ins.selectComponent('#pull-container').setStyle({
-				transform: 'translateY(' + refreshDis + 'px)',
-				transition: 'transform .3s ease',
-			})
-			flickerPoints(ins)
-			ins.callMethod('pullEnd')
-		} else if (pullInfo.slowY > 1) {
+		if (!isIos) {
+			if (pullInfo.slowY > refreshDis) {
+				lock = true
+				ins.selectComponent('#pull-container').setStyle({
+					transform: 'translateY(' + refreshDis + 'px)',
+					transition: 'transform .3s ease',
+				})
+				flickerPoints(ins)
+				setPointMargin(ins, maxPointMoveDis)
+				ins.callMethod('pullEnd')
+			} else if (pullInfo.slowY > 1) {
+				ins.selectComponent('#pull-container').setStyle({
+					transform: 'translateY(0)',
+					transition: 'transform .3s ease',
+				})
+				ins.setTimeout(function() {
+					ins.selectComponent('#pull-container').setStyle({}) // 移除transform属性，否则会使子元素的position: fixed失效
+				}, 300)
+			}
+		} else {
+			scrollTop = ins.selectComponent('#pull-container').getDataset().scrollTop || 0
+			if (scrollTop < (- refreshDis)) {
+				lock = true
+				ins.selectComponent('.ios-block').setStyle({ height: refreshDis + 'px' })
+
+				ins.setTimeout(function() {
+					ins.callMethod('pullEnd')
+				}, 300)
+			}
+		}
+		pullInfo.deltaY = 0
+		pullInfo.slowY = 0
+		isPull = null
+	}
+	
+	function reset(ins) {
+		if (!isIos) {
+			stopPoints(ins)
+			setPointMargin(ins, 0)
 			ins.selectComponent('#pull-container').setStyle({
 				transform: 'translateY(0)',
 				transition: 'transform .3s ease',
 			})
 			ins.setTimeout(function() {
 				ins.selectComponent('#pull-container').setStyle({}) // 移除transform属性，否则会使子元素的position: fixed失效
+				lock = false
 			}, 300)
+		} else {
+			ins.setTimeout(function() {
+				ins.selectComponent('.ios-block').setStyle({ height: '0' })
+				lock = false
+			}, 600)
 		}
-		count = 0
-		pullInfo.deltaY = 0
-		pullInfo.slowY = 0
-
-		if (isIos) {
-			ins.callMethod('changeScrollAble', { status: true })
-		}
-	}
-	
-	function reset(ins) {
-		stopPoints(ins)
-		setPointMargin(ins, 0)
-		ins.selectComponent('#pull-container').setStyle({
-			transform: 'translateY(0)',
-			transition: 'transform .3s ease',
-		})
-		ins.setTimeout(function() {
-			ins.selectComponent('#pull-container').setStyle({}) // 移除transform属性，否则会使子元素的position: fixed失效
-			lock = false
-		}, 300)
 	}
 	
 	function setPointMargin(ins, margin) {
-		ins.selectComponent('.left-point').setStyle({ left: '-' + margin + 'px' })
-		ins.selectComponent('.right-point').setStyle({ right: '-' + margin + 'px' })
+		var leftPoint = ins.selectComponent('.left-point')
+		var rightPoint = ins.selectComponent('.right-point')
+		if (leftPoint) {
+			leftPoint.setStyle({ left: '-' + margin + 'px' })
+		}
+		if (rightPoint) {
+			rightPoint.setStyle({ right: '-' + margin + 'px' })
+		}
 	}
 	
 	function flickerPoints(ins) {
@@ -176,10 +188,12 @@
 </script>
 
 <script>
-const systemInfo = uni.getSystemInfoSync()
-
 export default {
 	props: {
+		disabled: {
+			type: Boolean,
+			default: false,
+		},
 		scrollTop: {
 			type: Number,
 			default: 0,
@@ -190,6 +204,8 @@ export default {
 		},
 	},
 	data() {
+		const systemInfo = uni.getSystemInfoSync()
+
 		return {
 			loadEndStatus: false,
 			isIos: systemInfo.osName === 'ios' || systemInfo.osName === 'macos',
@@ -226,18 +242,43 @@ export default {
 	justify-content: center;
 	transform: translateY(-100%);
 	padding-bottom: 21px;
+	z-index: 10;
 }
 .points-wrap {
 	width: 6px;
 	height: 6px;
 	position: relative;
 }
-.pull-point {
+.pull-point, .ios-pull-point {
 	width: 6px;
 	height: 6px;
 	border-radius: 6px;
 	background-color: rgba(0, 0, 0, 0.3);
 	position: absolute;
+}
+.ios-pull-header {
+	margin-top: -21px;
+}
+.ios-points-wrap {
+	width: 6px;
+	height: 6px;
+	margin: 0 auto;
+	position: relative;
+	display: flex;
+	align-items: flex-end;
+	box-sizing: border-box;
+	padding-bottom: 21px;
+}
+.ios-left-point {
+	left: -15px;
+}
+.ios-right-point {
+	right: -15px;
+}
+.ios-block {
+	width: 100%;
+	height: 0;
+	transition: height .3s ease;
 }
 
 .flicker:nth-of-type(1) {

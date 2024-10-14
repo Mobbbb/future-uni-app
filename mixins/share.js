@@ -60,7 +60,6 @@ export default {
 	},
 	methods: {
 		setShareInfo({ title = '', path = '', imageUrl = '',  desc = '' }) {
-			console.log(title, this._shareInfo)
 			this._shareInfo.title = title
 			this._shareInfo.path = path
 			this._shareInfo.imageUrl = imageUrl

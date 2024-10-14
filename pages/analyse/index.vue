@@ -1,7 +1,8 @@
 <!--交易 -> 账户分析-->
 <template>
-	<ux-nav :showBack="false" :background="topBg.header">账户分析</ux-nav>
-    <ux-pull :scrollTop="scrollTop" @on-pull-end="pullLoad">
+    <page-meta :page-style="preventScrollAndPull ? 'overflow-y: hidden' : 'overflow-y: scroll'"></page-meta>
+    <ux-nav :showBack="false" :background="topBg.header">账户分析</ux-nav>
+    <ux-pull :disabled="preventScrollAndPull" :scrollTop="scrollTop" @on-pull-end="pullLoad">
         <view class="analyse-content-wrap">
             <view :style="topBg.bottom">
                 <view class="total-analyse-wrap">
@@ -15,7 +16,7 @@
                 </view>
                 <uni-card>
 					<view class="search-input-wrap">
-						<uni-datetime-picker type="daterange" v-model="basicDate" :clear-icon="false" @change="changeBasicDate" placeholder="请选择日期" />
+						<uni-datetime-picker @on-close="onClose" @show="onShow" type="daterange" v-model="basicDate" :clear-icon="false" @change="changeBasicDate" placeholder="请选择日期" />
 					</view>
                     <view class="card-title">交易统计<span class="card-title-date">({{displayTime}})</span></view>
                     <view class="card-row-wrap">
@@ -193,14 +194,14 @@
             <uni-card>
                 <view class="analyse-calendar-header">
                     <view class="date-picker-wrap" v-if="dayCalendarShowStatus">
-						<ux-icon right="6" type="left" size="16" @click="changeCalendarDate(-1)"></ux-icon>
-						<ux-month-picker v-model="calendarDate" :clearIcon="false" @change="changeCalendarDate('')" placeholder="请选择日期"></ux-month-picker>
-						<ux-icon left="6" type="right" size="16" @click="changeCalendarDate(1)"></ux-icon>
+						<view class="fit-parent pr-6" @click="changeCalendarDate(-1)"><ux-icon type="left" size="16"></ux-icon></view>
+						<ux-month-picker v-model="calendarDate" @on-close="onClose" @on-show="onShow" :clearIcon="false" @change="changeCalendarDate('')" placeholder="请选择日期"></ux-month-picker>
+						<view class="fit-parent pl-6" @click="changeCalendarDate(1)"><ux-icon type="right" size="16"></ux-icon></view>
                     </view>
                     <view class="date-picker-wrap" v-else>
-						<ux-icon right="6" type="left" size="16" @click="changeCalendarYear(-1)"></ux-icon>
+						<view class="fit-parent pr-6" @click="changeCalendarYear(-1)"><ux-icon type="left" size="16"></ux-icon></view>
 						<ux-year-picker v-model="calendarYear" :clearIcon="false" @change="changeCalendarYear" placeholder="请选择日期"></ux-year-picker>
-						<ux-icon left="6" type="right" size="16" @click="changeCalendarYear(1)"></ux-icon>
+						<view class="fit-parent pl-6" @click="changeCalendarYear(1)"><ux-icon type="right" size="16"></ux-icon></view>
                     </view>
                     <ux-switch
 						size="small"
@@ -224,7 +225,7 @@
             <uni-card>
                 <view class="line-chart-filter-wrap">
 					<uni-data-select class="data-select mr-12" :clear="false" v-model="dayLineFutureNameBindValue" :localdata="futuresList"  @change="changeDayLineFuture"></uni-data-select>
-					<ux-month-picker v-model="kLineDate" :clearIcon="false" @change="changeKLineDate" placeholder="请选择日期"></ux-month-picker>
+					<ux-month-picker v-model="kLineDate" @on-close="onClose" @on-show="onShow" :clearIcon="false" @change="changeKLineDate" placeholder="请选择日期"></ux-month-picker>
                 </view>
 				<view id="lineChart"><l-echart ref="lineChart"></l-echart></view>
             </uni-card>
@@ -577,10 +578,17 @@ onShareAppMessage(() => {
 })
 
 const scrollTop = ref(0)
+const preventScrollAndPull = ref(false)
 onPageScroll(e => scrollTop.value = e.scrollTop)
 const pullLoad = async (next) => {
 	await initAnalyseData()
 	next()
+}
+const onShow = () => {
+	preventScrollAndPull.value = true
+}
+const onClose = () => {
+	preventScrollAndPull.value = false
 }
 
 watch(isLogin, (value) => {
@@ -601,6 +609,7 @@ onMounted(() => {
 <style lang="scss">
 page {
 	height: 100%;
+	overflow-y: scroll;
 }
 </style>
 
