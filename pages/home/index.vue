@@ -57,7 +57,7 @@
 					</uni-tr>
 				</uni-table>
 			</ux-table>
-			<view class="home-chart" v-show="isLogin" @touchmove.stop><l-echart ref="chartRef"></l-echart></view>
+			<view class="home-chart" :style="{ visibility: isLogin ? 'unset' : 'hidden' }" @touchmove.stop><l-echart ref="chartRef"></l-echart></view>
 		</view>
     </ux-pull>
 </template>
@@ -122,7 +122,7 @@ const isLogin = computed(() => store.getters['app/isLogin'])
 const openingOrderList = computed(() => store.state.order.openingOrderList)
 const openingOrderGroup = computed(() => store.state.order.openingOrderGroup)
 const setLoginDrawerStatus = (status) => store.commit('app/setLoginDrawerStatus', status)
-const setOpeningOrderList = (value) => store.commit('order/setOpeningOrderList', value)
+const resetOpeningOrderData = () => store.dispatch('order/resetOpeningOrderData')
 const getOpeningOrderData = () => store.dispatch('order/getOpeningOrderData')
 
 // 合约列表
@@ -249,17 +249,20 @@ const orderRowClick = (row) => {
 	renderRowPrice(row)
 }
 
-const renderRowPrice = async (row) => {
+const renderRowPrice = async (row = {}) => {
+	const { name, buyOrSale } = row
     const echartLists = {
         x: [],
         y: [],
     }
-    openingOrderGroup.value[`${row.name}${row.buyOrSale}`].forEach(item => {
-        for (let i = 0; i < item.hands; i++) {
-            echartLists.y.push(item.price)
-            echartLists.x.push(dateFormat(item.date, 'MM.dd'))
-        }
-    })
+	if (openingOrderGroup.value[`${name}${buyOrSale}`]) {
+		openingOrderGroup.value[`${name}${buyOrSale}`].forEach(item => {
+		    for (let i = 0; i < item.hands; i++) {
+		        echartLists.y.push(item.price)
+		        echartLists.x.push(dateFormat(item.date, 'MM.dd'))
+		    }
+		})
+	}
 
 	const myChart = await chartRef.value.init(echarts)
 	myChart.setOption(getOrderLineOption(echartLists))
@@ -273,10 +276,17 @@ const initOpeningAndRecentlyFeature = async () => {
 	if (isLogin.value) {
 		await getRecentlyFeature()
 		await rerenderTable()
-		if (openingOrderList.value[0]) {
-			renderRowPrice(openingOrderList.value[0])
-		}
+		renderRowPrice(openingOrderList.value[0])
 	}
+}
+
+const resetData = () => {
+	// 最近合约重置
+	recentlyFeatureNames.value = []
+	// 表格数据重置
+	resetOpeningOrderData()
+	// 图表数据重置
+	renderRowPrice()
 }
 
 const scrollTop = ref(0)
@@ -299,9 +309,7 @@ onTabItemTap(() => {
 	if (!isLogin.value) {
 		hasGotData = false
 	} else if (!hasGotData) { // 已登录，未获取过图表
-		if (openingOrderList.value[0]) {
-			renderRowPrice(openingOrderList.value[0])
-		}
+		renderRowPrice(openingOrderList.value[0])
 		hasGotData = true
 	}
 })
@@ -311,8 +319,7 @@ watch(isLogin, async (value) => {
     if (value) {
         initOpeningAndRecentlyFeature()
     } else {
-        setOpeningOrderList([]) // 清空数据
-        recentlyFeatureNames.value = []
+		resetData()
     }
 })
 
@@ -327,13 +334,6 @@ onMounted(async () => {
     }
 })
 </script>
-
-<style lang="scss">
-page {
-	height: 100%;
-	overflow-y: scroll;
-}
-</style>
 
 <style scoped lang="scss">
 .future-wrap {

@@ -32,7 +32,7 @@
 		</view>
 		<view class="item-content">
 			<view class="item-sub-title-wrap">
-				<view class="item-sub-title">前往安装页面复制链接<br>安装电脑端</view>
+				<view class="item-sub-title"><text class="link" @click="toGuidePage">前往</text>安装页面复制链接<br>安装电脑端</view>
 				<uni-icons color="#999" type="right" size="12"></uni-icons>
 				<view class="item-sub-title">勾选启动邮件通知<br>并点击开始</view>
 			</view>
@@ -89,6 +89,12 @@ onPageScroll(e => {
 		navBg.value = '#ffd076'
 	}
 })
+
+const toGuidePage = () => {
+	uni.navigateTo({
+		url: '/pages/mine/sub-pages/guide',
+	})
+}
 
 </script>
 

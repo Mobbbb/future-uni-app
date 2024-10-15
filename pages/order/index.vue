@@ -58,7 +58,7 @@
 						<text v-else>已平{{item.closeHands}}手</text>
 					</uni-td>
 					<uni-td>
-						<view class="alignRight">
+						<view class="align-right">
 							<button class="mr-12" size="micro" type="warning" v-if="!item.openOrClose" @click="cancelRow(item)">
 								撤销
 							</button>
@@ -68,18 +68,18 @@
 						</view>
 					</uni-td>
 					<uni-td>
-						<view class="alignCenter" v-if="(item.profit || item.profit === 0)"
+						<view class="align-center" v-if="(item.profit || item.profit === 0)"
 						    :style="item.profit > 0 ? { color: '#eb4436' } : { color: '#0e9d58' }">
 						    <text style="font-weight: bold;">{{item.profit}}</text>
 						</view>
-						<view v-else class="talbe-block-cell alignCenter">--</view>
+						<view v-else class="talbe-block-cell align-center">--</view>
 					</uni-td>
 					<uni-td>
-						<view class="alignCenter" v-if="(item.totalProfit || item.totalProfit === 0)"
+						<view class="align-center" v-if="(item.totalProfit || item.totalProfit === 0)"
 						    :style="item.totalProfit > 0 ? { color: '#eb4436' } : { color: '#0e9d58' }">
 						    <text style="font-weight: bold;">{{item.totalProfit}}</text>
 						</view>
-						<view v-else class="talbe-block-cell alignCenter">--</view>
+						<view v-else class="talbe-block-cell align-center">--</view>
 					</uni-td>
 				</uni-tr>
 			</uni-table>
@@ -246,6 +246,7 @@ const getSummaries = (param) => {
 }
 
 const searchHandle = () => {
+	searchParams.currentPage = 1
     getTableData()
 }
 
@@ -257,7 +258,7 @@ const selectDate = (num) => {
     if (typeof num === 'number') {
         searchParams.date = [getDateByStep(searchParams.date[0], num), getDateByStep(searchParams.date[1], num)]
     }
-    getTableData()
+    searchHandle()
 }
 
 const resetHandle = () => {
@@ -268,6 +269,7 @@ const resetHandle = () => {
     searchParams.startDate = ''
     searchParams.endDate = ''
     searchParams.status = 0
+	searchParams.currentPage = 1
     getTableData()
 }
 

@@ -62,6 +62,12 @@
 		scrollTop = dataset.scrollTop || 0
 		isIos = dataset.isIos || false
 		disabled = dataset.disabled || false
+		// #ifdef H5
+		isIos = false
+		// #endif
+		// #ifdef H5
+		disabled = dataset.disabled === 'true'
+		// #endif
 	}
 	function handlerMove(e, ins) {
 		if (!lock && scrollTop <= 0 && !isIos && !disabled) {
@@ -242,7 +248,7 @@ export default {
 	justify-content: center;
 	transform: translateY(-100%);
 	padding-bottom: 21px;
-	z-index: 10;
+	z-index: 8;
 }
 .points-wrap {
 	width: 6px;

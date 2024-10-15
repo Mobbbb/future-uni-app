@@ -126,7 +126,6 @@ onMounted(() => {
 <style lang="scss">
 page {
 	background-color: $base-background-color;
-	overflow-y: scroll;
 }
 </style>
 

@@ -244,7 +244,7 @@ import MonthlyCalendar from '@/components/monthly-calendar.vue'
 import { dateFormat, calculateDate, toMonth, dateGap } from '@/utils/umob.js'
 import { formatPriceLineData, formatBasicData, formatCalendarData } from '@/utils/data-processing.js'
 import { fetchOrderInfoHandle } from '@/request.api/index.js'
-import { onShareAppMessage, onPageScroll } from '@dcloudio/uni-app'
+import { onShareAppMessage, onPageScroll, onTabItemTap } from '@dcloudio/uni-app'
 
 // #ifdef MP-WEIXIN
 const echarts = require('../../uni_modules/lime-echart/static/echarts.min')
@@ -405,52 +405,60 @@ const initCalendar = async (force = false) => {
 }
 
 const initDayLineChart = async () => {
+    if (!isLogin.value) return
     const designatedFutureLists = await getFutureByName()
 
-    nextTick(async () => {
-        const params = formatPriceLineData(designatedFutureLists)
-        const option = getDoubleKLineOption(params, enFutureMap.value[dayLineFutureName.value])
-
-        lineChartIns = await lineChart.value.init(echarts)
-        lineChartIns.setOption(option)
+    nextTick(() => {
+		formatDayLineChart(designatedFutureLists)
     })
+}
+
+const formatDayLineChart = async (designatedFutureLists = []) => {
+	const params = formatPriceLineData(designatedFutureLists)
+	const option = getDoubleKLineOption(params, enFutureMap.value[dayLineFutureName.value])
+	
+	lineChartIns = await lineChart.value.init(echarts)
+	lineChartIns.setOption(option)
 }
 
 const initBasicInfo = async () => {
     if (!isLogin.value) return
     const requestParams = parseDateParams(basicDate.value)
     closeFutureLists.value = await getCloseFutureByDate(requestParams)
+	formatBasicInfo()
+}
 
-    const params = formatBasicData(enFutureNameMap.value, closeFutureLists.value)
-
-    barChartMaxWidth.value = Object.keys(params.chFutureMap).length * 60 < 500 ?  500 : Object.keys(params.chFutureMap).length * 60
-
-    nextTick(async () => {
-        barChartIns = await barChart.value.init(echarts)
-        barChartIns.setOption(getBarOption(params.chFutureMap, barParams))
-        barChartIns.dispatchAction({
-            type: 'showTip',
-            seriesIndex: 0,
-            dataIndex: 0,
-        })
-    })
-    analyseResult.buyRate = params.buyRate
-    analyseResult.saleRate = params.saleRate
-    analyseResult.totalRate = params.totalRate
-    analyseResult.preBuyProfit = params.preBuyProfit
-    analyseResult.preBuyProfitUp = params.preBuyProfitUp
-    analyseResult.preBuyProfitDown = params.preBuyProfitDown
-    analyseResult.preSaleProfit = params.preSaleProfit
-    analyseResult.preSaleProfitUp = params.preSaleProfitUp
-    analyseResult.preSaleProfitDown = params.preSaleProfitDown
-
-    analyseResult.saleProfit = params.saleProfit
-    analyseResult.saleProfitUp = params.saleProfitUp
-    analyseResult.saleProfitDown = params.saleProfitDown
-    analyseResult.buyProfit = params.buyProfit
-    analyseResult.buyProfitUp = params.buyProfitUp
-    analyseResult.buyProfitDown = params.buyProfitDown
-    analyseResult.totalProfit = params.totalProfit
+const formatBasicInfo = async () => {
+	const params = formatBasicData(enFutureNameMap.value, closeFutureLists.value)
+	
+	barChartMaxWidth.value = Object.keys(params.chFutureMap).length * 60 < 500 ?  500 : Object.keys(params.chFutureMap).length * 60
+	
+	nextTick(async () => {
+	    barChartIns = await barChart.value.init(echarts)
+	    barChartIns.setOption(getBarOption(params.chFutureMap, barParams))
+	    barChartIns.dispatchAction({
+	        type: 'showTip',
+	        seriesIndex: 0,
+	        dataIndex: 0,
+	    })
+	})
+	analyseResult.buyRate = params.buyRate
+	analyseResult.saleRate = params.saleRate
+	analyseResult.totalRate = params.totalRate
+	analyseResult.preBuyProfit = params.preBuyProfit
+	analyseResult.preBuyProfitUp = params.preBuyProfitUp
+	analyseResult.preBuyProfitDown = params.preBuyProfitDown
+	analyseResult.preSaleProfit = params.preSaleProfit
+	analyseResult.preSaleProfitUp = params.preSaleProfitUp
+	analyseResult.preSaleProfitDown = params.preSaleProfitDown
+	
+	analyseResult.saleProfit = params.saleProfit
+	analyseResult.saleProfitUp = params.saleProfitUp
+	analyseResult.saleProfitDown = params.saleProfitDown
+	analyseResult.buyProfit = params.buyProfit
+	analyseResult.buyProfitUp = params.buyProfitUp
+	analyseResult.buyProfitDown = params.buyProfitDown
+	analyseResult.totalProfit = params.totalProfit
 }
 
 const changeBasicDate = () => {
@@ -560,9 +568,23 @@ const drillingMonthCalendar = (value) => {
 }
 
 const initAnalyseData = async () => {
-	if (isLogin.value) {
-		await Promise.all([initBasicInfo(), initCalendar(true), initDayLineChart()])
+	await Promise.all([initBasicInfo(), initCalendar(true), initDayLineChart()])
+}
+
+const resetData = () => {
+	// 基础数据重置
+	barParams.value = []
+    closeFutureLists.value = []
+	formatBasicInfo()
+
+	// 日历数据重置
+	calendarDataMap.value = {}
+	if (dayCalendarShowStatus.value) {
+		getSelectedCalendarData()
 	}
+	
+	// 日K图表重置
+	formatDayLineChart()
 }
 
 onShareAppMessage(() => {
@@ -591,13 +613,24 @@ const onClose = () => {
 	preventScrollAndPull.value = false
 }
 
+// #ifdef H5
+let hasGotData = false
+onTabItemTap(() => {
+	if (!isLogin.value) {
+		hasGotData = false
+	} else if (!hasGotData) { // 已登录，未获取过图表
+		initBasicInfo()
+		initDayLineChart()
+		hasGotData = true
+	}
+})
+// #endif
+
 watch(isLogin, (value) => {
     if (value) {
         initAnalyseData()
     } else {
-        closeFutureLists.value = [] // 清空数据
-        calendarDataMap.value = {} // 清空数据
-        initAnalyseData()
+        resetData()
     }
 })
 
@@ -605,13 +638,6 @@ onMounted(() => {
     initAnalyseData()
 })
 </script>
-
-<style lang="scss">
-page {
-	height: 100%;
-	overflow-y: scroll;
-}
-</style>
 
 <style scoped>
 .search-input-wrap {

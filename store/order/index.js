@@ -123,7 +123,11 @@ const order = {
             })
             commit('setOpeningOrderGroup', groupObj)
             commit('setOpeningOrderList', formatArr)
-        }
+        },
+        async resetOpeningOrderData({ commit }) {
+			commit('setOpeningOrderGroup', {})
+			commit('setOpeningOrderList', [])
+		},
     },
 }
 
