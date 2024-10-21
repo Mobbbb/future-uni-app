@@ -19,6 +19,12 @@
 import { computed, ref } from 'vue'
 import { getMenuButtonBoundingClientRect } from '@/utils/index.js'
 
+/**
+ * @property {Boolean} showBack 是否显示返回按钮
+ * @property {String} color 标题文字颜色
+ * @property {String} background 背景颜色
+ * @property {Boolean} center 标题文字是否居中
+ */
 const props = defineProps({
 	showBack: {
 		type: Boolean,

@@ -14,7 +14,7 @@ export default {
 	onLoad() {
 		if (wx.showShareMenu) {
 			wx.showShareMenu({
-				menus: ["shareAppMessage", "shareTimeline"]
+				menus: ['shareAppMessage', 'shareTimeline']
 			})
 		}
 	},

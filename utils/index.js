@@ -189,6 +189,9 @@ export function calculatePearsonCorrelation(data1, data2) {
     return pearsonCorrelation(data1, data2)
 }
 
+/**
+ * @description 获取导航栏高度信息
+ */
 export const getMenuButtonBoundingClientRect = () => {
 	let statusBarHeight = uni.getStorageSync('statusBarHeight') || 0
 	let platform = uni.getStorageSync('platform')
@@ -203,18 +206,16 @@ export const getMenuButtonBoundingClientRect = () => {
 	let navBarHeight = uni.getStorageSync('navBarHeight')
 	if (!navBarHeight) {
 		// 计算navBarHeight
-		if (uni.getMenuButtonBoundingClientRect) { // 胶囊
+		if (uni.getMenuButtonBoundingClientRect) { // 获取胶囊信息
 			let menuInfo = uni.getStorageSync('menuInfo')
 			if (!menuInfo) menuInfo = uni.getMenuButtonBoundingClientRect()
 			if (menuInfo) {
-				uni.setStorageSync('menuInfo', menuInfo)
-				// 导航栏高度
+				uni.setStorageSync('menuInfo', menuInfo) // 保存胶囊信息
 				navBarHeight = menuInfo.height + (menuInfo.top - statusBarHeight) * 2
 			} else {
 				navBarHeight = platform === 'android' ? 48 : 44
 			}
 		} else {
-			// 导航栏高度
 			navBarHeight = platform === 'android' ? 48 : 44
 		}
 	}
@@ -222,7 +223,7 @@ export const getMenuButtonBoundingClientRect = () => {
 	uni.setStorageSync('navBarHeight', navBarHeight)
 	
 	return {
-		navBarHeight,
-		statusBarHeight,
+		navBarHeight, // 导航栏高度
+		statusBarHeight, // 状态栏高度
 	}
 }

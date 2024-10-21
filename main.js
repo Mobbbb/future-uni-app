@@ -14,7 +14,6 @@ import UxDialog from './components/ux-dialog.vue'
 import UxNav from './components/ux-nav.vue'
 import UxPull from './components/ux-pull.vue'
 import UxBlock from './components/ux-block.vue'
-import { onShareAppMessage } from '@dcloudio/uni-app'
 import shareMixin from '@/mixins/share.js'
 
 import '@/styles/global.scss'
