@@ -4,7 +4,7 @@
 		<uni-easyinput prefixIcon="email" :maxlength="40" :styles="styles" v-model="email" :disabled="!editable" :clearable="false" placeholder="请输入邮箱"></uni-easyinput>
 		<view class="tips">每30天可修改一次邮箱，请谨慎提交。<text v-if="editable && emailTime">上次修改时间为{{ emailTime }}</text><text v-if="!editable">距下次修改时间还剩{{ restDay }}天</text></view>
         <button class="save-btn" type="buy" :disabled="!email || !editable || email === userEmail" @click="save">提交</button>
-		<view class="question-link" @click="toQuestionPage"><text>如何在微信收到邮件通知</text><uni-icons type="help" size="18" color="#628dd1"></uni-icons></view>
+		<view class="question-link" @click="toQuestionPage"><text>如何在微信端接收期货价格波动通知</text><uni-icons type="help" size="18" color="#628dd1"></uni-icons></view>
 	</view>
 </template>
 
@@ -32,7 +32,6 @@ const isValidEmail = computed(() => emailRegex.test(email.value))
 const restDay = computed(() => Math.ceil(dateInterval(Date.parse(new Date(emailTime.value)) + DAYS_AFTER, Date.now()) / 1000 / 60 / 60 / 24))
 const editable = computed(() => emailTime.value && dateInterval(Date.now(), emailTime.value) > DAYS_AFTER || !emailTime.value)
 
-const setEmail = (email) => store.commit('app/setEmail', email)
 const INIT_USER = () => store.dispatch('app/INIT_USER')
 const logoutAction = () => store.dispatch('app/logoutAction')
 

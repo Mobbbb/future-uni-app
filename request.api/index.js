@@ -53,6 +53,14 @@ export const updateUserEmail = (email) => {
     })
 }
 
+export const updateSubscribe95 = (status) => {
+    return axios.request({
+        url: prefixApi + '/user/updateSubscribe95',
+        method: 'post',
+        data: { status },
+    })
+}
+
 export const fetchListData = () => {
     return axios.request({
         url: '/resource/future/message.json',

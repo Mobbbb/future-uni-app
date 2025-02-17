@@ -18,7 +18,9 @@
 			<view class="login-tips-wrap">* 账号密码由数字或字母组成，长度至少6位</view>
 			<view class="login-btn-wrap">
 				<gc-button type="active" @on-click="clickRegister" width="100%">注册</gc-button>
-				<gc-button @click="registerStatus = false" width="100%" style="margin-top: 12px;">返回</gc-button>
+				<view style="width: 100%;margin-top: 12px;">
+					<gc-button @click="registerStatus = false" width="100%">返回</gc-button>
+				</view>
 			</view>
 		</uni-card>
 		<uni-card padding="24px 10px" v-else>

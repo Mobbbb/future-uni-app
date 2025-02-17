@@ -7,7 +7,7 @@
                 <text>起止日期：</text>
 				<view class="fit-parent pr-6" @click="selectDate(-1)"><ux-icon type="left" size="16"></ux-icon></view>
 				<uni-datetime-picker type="daterange" v-model="searchParams.date" @change="selectDate" :clear-icon="false" placeholder="请选择日期" />
-				<view class="fit-parent pl-6" @click="selectDate(1)"><ux-icon type="right"size="16"></ux-icon></view>
+				<view class="fit-parent pl-6" @click="selectDate(1)"><ux-icon type="right" size="16"></ux-icon></view>
             </view>
             <view class="search-item-wrap">
                 <text>合约名：</text>
@@ -25,7 +25,7 @@
 					<uni-th prop="hands" width="60" label="手数">手数</uni-th>
 					<uni-th prop="commission" width="90" label="手续费">手续费</uni-th>
 					<uni-th prop="openOrClose" width="70" label="开/平">开/平</uni-th>
-					<uni-th prop="openOrClose" width="160" label="交易时间">交易时间</uni-th>
+					<uni-th prop="openOrClose" sortable @sort-change="sortHandle" width="160" label="交易时间">交易时间</uni-th>
 					<uni-th prop="openOrClose" width="90" label="成交序号">成交序号</uni-th>
 					<uni-th prop="openOrClose" width="120" label="关联序号">关联序号</uni-th>
 					<uni-th prop="openOrClose" width="60" label="状态">状态</uni-th>
@@ -136,6 +136,7 @@ const searchParams = reactive({
     status: 0,
     pageSize: 14,
     currentPage: 1,
+	orderBy: 'DESC',
 })
 
 const shortcuts = [
@@ -248,6 +249,13 @@ const getSummaries = (param) => {
 const searchHandle = () => {
 	searchParams.currentPage = 1
     getTableData()
+}
+
+const sortHandle = (params) => {
+	const { order } = params
+	searchParams.currentPage = 1
+	searchParams.orderBy = order === 'ascending' ? 'ASC' : 'DESC'
+	getTableData()
 }
 
 const changeInputHandle = () => {

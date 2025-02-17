@@ -1,4 +1,3 @@
-
 export default {
 	data() {
 		return {
@@ -33,7 +32,7 @@ export default {
 
 			returnInfo.title = '期货小助手记录复盘交易数据'
 			returnInfo.path = route
-			returnInfo.imageUrl = '/static/wx-share-img.png'
+			returnInfo.imageUrl = '/static/wx-share-img2.png'
 			returnInfo.desc = ''
 		}
 		this._infoChanged = false

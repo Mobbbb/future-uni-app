@@ -64,6 +64,12 @@
 					"style": {
 						"navigationStyle": "custom"
 					}
+				},
+				{
+					"path": "subscribe95-setting",
+					"style": {
+						"navigationStyle": "custom"
+					}
 				}
 			]
 		}

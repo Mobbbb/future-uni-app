@@ -104,8 +104,8 @@ const app = {
         setInDayFirstLists(state, value) {
             state.USER_INFO.inDayFirstLists = value
         },
-		setEmail(state, value) {
-            state.USER_INFO.email = value
+		setSubscribe95(state, value) {
+            state.USER_INFO.subscribe95 = value
         },
 		setScreenInfo(state, value) {
             state.screenInfo = value
