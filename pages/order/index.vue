@@ -374,25 +374,6 @@ page {
 .search-item-wrap text {
     flex-shrink: 0;
 }
-.table-input-wrap {
-    background: #fff;
-    width: 100%;
-    height: 100%;
-    box-sizing: border-box;
-}
-.table-input-item-wrap {
-    display: flex;
-    align-items: center;
-    padding-top: 16px;
-    font-size: 12px;
-    color: #606266;
-}
-.table-input-item-wrap:first-of-type {
-    padding-top: 0;
-}
-.table-input-item-wrap text {
-    flex-shrink: 0;
-}
 .pagination-wrap { 
     flex-shrink: 0;
 	padding: 4px 0;

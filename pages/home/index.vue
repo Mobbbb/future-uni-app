@@ -35,7 +35,7 @@
 					<view class="order-name-label" v-for="item in recentlyFeatureNames" @click="selectOrderName(item)" :key="item">{{item}}</view>
 				</view>
 			</view>
-			<ux-table fixed="left" :data="openingOrderList">
+			<ux-table class="future-table" fixed="left" :data="openingOrderList">
 				<uni-table border emptyText="">
 					<uni-tr>
 						<uni-th prop="name" label="合约" width="70" fixed="left">合约</uni-th>

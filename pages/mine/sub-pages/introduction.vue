@@ -1,6 +1,6 @@
 <template>
 	<ux-nav>品种简介</ux-nav>
-	<canvas class="future-info" canvas-id="FutureInfo"></canvas>
+	<canvas class="future-info" id="FutureInfo" canvas-id="FutureInfo"></canvas>
 	<view class="introduction">
 		<uni-collapse v-model="openIndex" accordion v-if="futuresList.length" @change="changeCollapse">
 			<uni-collapse-item v-for="item in futuresList" :key="item.name">
@@ -27,7 +27,7 @@
 						<view class="collapse-item-title">开仓手续费</view>
 						<view>{{
 							item.openCommissionType === 'number'
-							? item.openCommission * commissionType + '元/手'
+							? (Number(item.openCommission * commissionType) === 0 ? 0 : item.openCommission * commissionType + '元/手')
 							: (item.openCommission * commissionType * 100 === 0 ? 0 : item.openCommission * commissionType * 100 + '%') }}
 						</view>
 					</view>
@@ -35,7 +35,7 @@
 						<view class="collapse-item-title">平仓手续费</view>
 						<view>{{
 							item.closeCommissionType === 'number'
-							? item.closeCommission * commissionType + '元/手'
+							? (Number(item.closeCommission * commissionType) === 0 ? 0 : item.closeCommission * commissionType + '元/手')
 							: (item.closeCommission * commissionType * 100 === 0 ? 0 : item.closeCommission * commissionType * 100 + '%') }}
 						</view>
 					</view>
@@ -43,7 +43,7 @@
 						<view class="collapse-item-title">日内平仓手续费</view>
 						<view>{{
 							item.closeCommissionType === 'number'
-							? item.dayCloseCommission * commissionType + '元/手'
+							? (Number(item.dayCloseCommission * commissionType) === 0 ? 0 : item.dayCloseCommission * commissionType + '元/手')
 							: (item.dayCloseCommission * commissionType * 100 === 0 ? 0 : item.dayCloseCommission * commissionType * 100 + '%') }}
 						</view>
 					</view>
@@ -73,25 +73,29 @@ const openIndex = ref('0')
 const drawImgUrl = ref('')
 
 const draw = (data) => {
-	const lineGap = 47
-	const context = uni.createCanvasContext('FutureInfo')
-	const openCommission = data.openCommissionType === 'number'
-		? data.openCommission * commissionType.value + '元/手'
-		: (data.openCommission * commissionType.value * 100 === 0 ? 0 : data.openCommission * commissionType.value * 100 + '%')
-	const closeCommission = data.closeCommissionType === 'number'
-		? data.closeCommission * commissionType.value + '元/手'
-		: (data.closeCommission * commissionType.value * 100 === 0 ? 0 : data.closeCommission * commissionType.value * 100 + '%')
-	const dayCloseCommission = data.closeCommissionType === 'number'
-		? data.dayCloseCommission * commissionType.value + '元/手'
-		: (data.dayCloseCommission * commissionType.value * 100 === 0 ? 0 : data.dayCloseCommission * commissionType.value * 100 + '%')
-	context.setFontSize(20)
-	drawLine('交易品种', `${data.chName} (${data.name})`, context, lineGap)
-	drawLine('每手每点位价格', `${data.num}元`, context, lineGap * 2)
-	drawLine('开仓手续费', openCommission, context, lineGap * 3)
-	drawLine('平仓手续费', closeCommission, context, lineGap * 4)
-	drawLine('日内平仓手续费', dayCloseCommission, context, lineGap * 5)
-	drawLine('是否支持优先平今', data.canCloseInDay ? '是' : '否', context, lineGap * 6)
-	context.draw()
+	return new Promise(resolve => {
+		const lineGap = 47
+		const context = uni.createCanvasContext('FutureInfo')
+		const openCommission = data.openCommissionType === 'number'
+			? (Number(data.openCommission * commissionType.value) === 0 ? 0 : data.openCommission * commissionType.value + '元/手')
+			: (data.openCommission * commissionType.value * 100 === 0 ? 0 : data.openCommission * commissionType.value * 100 + '%')
+		const closeCommission = data.closeCommissionType === 'number'
+			? (Number(data.closeCommission * commissionType.value) === 0 ? 0 : data.closeCommission * commissionType.value + '元/手')
+			: (data.closeCommission * commissionType.value * 100 === 0 ? 0 : data.closeCommission * commissionType.value * 100 + '%')
+		const dayCloseCommission = data.closeCommissionType === 'number'
+			? (Number(data.dayCloseCommission * commissionType.value) === 0 ? 0 : data.dayCloseCommission * commissionType.value + '元/手')
+			: (data.dayCloseCommission * commissionType.value * 100 === 0 ? 0 : data.dayCloseCommission * commissionType.value * 100 + '%')
+		context.setFontSize(20)
+		drawLine('交易品种', `${data.chName} (${data.name})`, context, lineGap)
+		drawLine('每手每点位价格', `${data.num}元`, context, lineGap * 2)
+		drawLine('开仓手续费', openCommission, context, lineGap * 3)
+		drawLine('平仓手续费', closeCommission, context, lineGap * 4)
+		drawLine('日内平仓手续费', dayCloseCommission, context, lineGap * 5)
+		drawLine('是否支持优先平今', data.canCloseInDay ? '是' : '否', context, lineGap * 6)
+		context.draw(true, () => {
+			resolve()
+		})
+	})
 }
 
 const drawLine = (label, value, context, y) => {
@@ -116,21 +120,24 @@ const createTempImg = () => {
 					success: (saveRes) => {
 						resolve({
 							data: saveRes.savedFilePath,
-							success: true
+							success: true,
+							msg: '',
 						})
 					},
-					fail: () => {
+					fail: (e) => {
 						resolve({
 							data: '',
-							success: false
+							success: false,
+							msg: e,
 						})
 					},
 				})
 			},
-			fail: () => {
+			fail: (e) => {
 				resolve({
 					data: '',
-					success: false
+					success: false,
+					msg: e,
 				})
 			},
 		})
@@ -138,9 +145,13 @@ const createTempImg = () => {
 }
 
 const canvasToImage = async (data) => {
-	draw(data)
+	await draw(data)
 	const res = await createTempImg()
-	drawImgUrl.value = res.data
+	if (res.success) {
+		drawImgUrl.value = res.data
+	} else {
+		ElMessage.success(res.msg)
+	}
 }
 
 const changeCollapse = (value) => {

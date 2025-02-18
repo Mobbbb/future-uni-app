@@ -14,7 +14,18 @@
 	</th>
 	<!-- #endif -->
 	<!-- #ifndef H5 -->
-	<view class="uni-table-th" :class="{ 'table--border': border }" :style="{ width: customWidth + 'px', 'text-align': align }"><slot></slot></view>
+	<view class="uni-table-th" :class="{ 'table--border': border }" :style="{ width: customWidth + 'px', 'text-align': align }">
+		<!--  CUSTOMIZED add sortable -->
+		<view class="uni-table-th-row" @click="sort">
+			<slot></slot>
+			<view class="uni-table-th-content" :style="{ 'justify-content': contentAlign }">
+				<view v-if="sortable" class="arrow-box">
+					<text class="arrow up" :class="{ active: ascending }" @click.stop="ascendingFn"></text>
+					<text class="arrow down" :class="{ active: descending }" @click.stop="descendingFn"></text>
+				</view>
+			</view>
+		</view>
+	</view>
 	<!-- #endif -->
 </template>
 
