@@ -92,7 +92,7 @@ const draw = (data) => {
 		drawLine('平仓手续费', closeCommission, context, lineGap * 4)
 		drawLine('日内平仓手续费', dayCloseCommission, context, lineGap * 5)
 		drawLine('是否支持优先平今', data.canCloseInDay ? '是' : '否', context, lineGap * 6)
-		context.draw(true, () => {
+		context.draw(false, () => {
 			resolve()
 		})
 	})

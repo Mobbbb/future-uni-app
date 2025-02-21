@@ -44,7 +44,7 @@
 					<uni-list-item title="邮箱设置" link to="/pages/mine/sub-pages/email-setting" note="期货价格波动/成品油价调整通知" showArrow
 						:thumb="base64.mail"
 						thumb-size="medium" :rightText="USER_INFO.email ? '已设置' : '去设置'" />
-					<uni-list-item title="95#油价订阅" link to="/pages/mine/sub-pages/subscribe95-setting" note="95#汽油价格调整邮件通知" showArrow
+					<uni-list-item title="油价订阅" link to="/pages/mine/sub-pages/subscribe95-setting" note="92#95#98#汽油价格调整邮件通知" showArrow
 						:thumb="base64.subscribe"
 						thumb-size="medium" :rightText="USER_INFO.subscribe95 ? '已订阅' : '去订阅'" />
 				</uni-list>

@@ -58,11 +58,11 @@
 			</view>
 			<view class="item-sub-title-wrap">
 				<view style="width: 50%;">
-					<img class="question-img" src="@/static/step/3.1.png">
+					<img class="question-img" src="@/static/step/3-1.png">
 				</view>
 				<uni-icons color="#fff" type="right" size="12"></uni-icons>
 				<view style="width: 50%;">
-					<img class="question-img" src="@/static/step/3.2.png">
+					<img class="question-img" src="@/static/step/3-2.png">
 				</view>
 			</view>
 		</view>

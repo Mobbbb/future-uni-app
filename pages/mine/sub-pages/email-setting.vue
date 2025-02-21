@@ -102,11 +102,11 @@ onMounted(() => {
 </style>
 
 <style>
-.email-config-wrap .uni-easyinput__content {
+.email-config-wrap >>> .uni-easyinput__content {
 	border-color: transparent!important;
 	border-radius: 0;
 }
-.email-config-wrap .uni-easyinput__content-input {
+.email-config-wrap >>> .uni-easyinput__content-input {
 	height: 46px;
 }
 </style>

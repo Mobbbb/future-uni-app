@@ -61,6 +61,20 @@ export const updateSubscribe95 = (status) => {
     })
 }
 
+export const getAllOilList = (status) => {
+    return axios.request({
+        url: prefixApi + '/other/getAllOilList',
+        method: 'get',
+    })
+}
+
+export const getOilDate = () => {
+    return axios.request({
+        url: prefixApi + '/other/selectDateFlag?id=2',
+        method: 'get',
+    })
+}
+
 export const fetchListData = () => {
     return axios.request({
         url: '/resource/future/message.json',
