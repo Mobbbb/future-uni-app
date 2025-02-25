@@ -190,6 +190,7 @@ export function calculatePearsonCorrelation(data1, data2) {
 }
 
 /**
+ * @description Uni-App
  * @description 获取导航栏高度信息
  */
 export const getMenuButtonBoundingClientRect = () => {
@@ -226,4 +227,57 @@ export const getMenuButtonBoundingClientRect = () => {
 		navBarHeight, // 导航栏高度
 		statusBarHeight, // 状态栏高度
 	}
+}
+
+
+/**
+ * @description Uni-App
+ */
+export const canvasToImage = (canvasId) => {
+	return new Promise(resolve => {
+		if (!uni.canvasToTempFilePath) {
+			resolve({
+				data: '',
+				success: false,
+				msg: 'canvasToTempFilePath does not exist',
+			})
+		} else if (!uni.getFileSystemManager) {
+			resolve({
+				data: '',
+				success: false,
+				msg: 'getFileSystemManager does not exist',
+			})
+		} else {
+			uni.canvasToTempFilePath({
+				canvasId,
+				success: (res) => {
+					const fileSystemManager = uni.getFileSystemManager()
+					fileSystemManager.saveFile({
+						tempFilePath: res.tempFilePath,
+						success: (saveRes) => {
+							resolve({
+								data: saveRes.savedFilePath,
+								success: true,
+								msg: '',
+							})
+						},
+						fail: (e) => {
+							resolve({
+								data: '',
+								success: false,
+								msg: e,
+							})
+						},
+					})
+				},
+				fail: (e) => {
+					resolve({
+						data: '',
+						success: false,
+						msg: e,
+					})
+				},
+			})
+		}
+	})
 }

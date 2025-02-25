@@ -62,6 +62,7 @@ import { computed, ref, getCurrentInstance, onMounted, watch } from 'vue'
 import { useStore } from 'vuex'
 import { updateUserInDayFirstLists } from '@/request.api/index.js'
 import { onShareAppMessage } from '@dcloudio/uni-app'
+import { canvasToImage } from '@/utils/index.js'
 
 const store = new useStore()
 
@@ -72,7 +73,7 @@ const openIndex = ref('0')
 
 const drawImgUrl = ref('')
 
-const draw = (data) => {
+const drawCanvas = (data) => {
 	return new Promise(resolve => {
 		const lineGap = 47
 		const context = uni.createCanvasContext('FutureInfo')
@@ -109,44 +110,9 @@ const drawLine = (label, value, context, y) => {
 	context.stroke()
 }
 
-const createTempImg = () => {
-	return new Promise(resolve => {
-		uni.canvasToTempFilePath({
-			canvasId: 'FutureInfo',
-			success: (res) => {
-				const fileSystemManager = uni.getFileSystemManager()
-				fileSystemManager.saveFile({
-					tempFilePath: res.tempFilePath,
-					success: (saveRes) => {
-						resolve({
-							data: saveRes.savedFilePath,
-							success: true,
-							msg: '',
-						})
-					},
-					fail: (e) => {
-						resolve({
-							data: '',
-							success: false,
-							msg: e,
-						})
-					},
-				})
-			},
-			fail: (e) => {
-				resolve({
-					data: '',
-					success: false,
-					msg: e,
-				})
-			},
-		})
-	})
-}
-
-const canvasToImage = async (data) => {
-	await draw(data)
-	const res = await createTempImg()
+const drawImage = async (data) => {
+	await drawCanvas(data)
+	const res = await canvasToImage('FutureInfo')
 	if (res.success) {
 		drawImgUrl.value = res.data
 	} else {
@@ -157,7 +123,7 @@ const canvasToImage = async (data) => {
 const changeCollapse = (value) => {
 	if (value) {
 		// #ifdef MP-WEIXIN
-		canvasToImage(futuresList.value[value])
+		drawImage(futuresList.value[value])
 		// #endif
 	}
 }
@@ -165,7 +131,7 @@ const changeCollapse = (value) => {
 onMounted(() => {
 	if (futuresList.value[openIndex.value]) {
 		// #ifdef MP-WEIXIN
-		canvasToImage(futuresList.value[openIndex.value])
+		drawImage(futuresList.value[openIndex.value])
 		// #endif
 	}
 })
@@ -173,7 +139,7 @@ onMounted(() => {
 watch(futuresList, (value) => {
 	if (value) {
 		// #ifdef MP-WEIXIN
-		canvasToImage(futuresList.value[openIndex.value])
+		drawImage(futuresList.value[openIndex.value])
 		// #endif
 	}
 })

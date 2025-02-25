@@ -1,95 +1,101 @@
 <template>
-	<ux-nav background="trasn" color="white">油价订阅</ux-nav>
 	<view class="subscribe-wrap">
-		<view class="step-wrap">
-			<view class="step-tips card">
-				<view class="mail-icon"><view class="icon-image"></view></view>
-				<view class="subscribe-right">
-					<view>设置邮箱</view>
-					<text class="setting-text" style="color: #999;" v-if="userEmail">已设置</text>
-					<text class="setting-text" v-else @click="toEmailPage">去设置</text>
+		<ux-nav background="linear-gradient(180deg, #1994fb, #2e9efb 100%)" color="white">油价订阅</ux-nav>
+		<view class="subscribe-body">
+			<view class="step-wrap">
+				<view class="step-tips card">
+					<view class="mail-icon"><view class="icon-image"></view></view>
+					<view class="subscribe-right">
+						<view>设置邮箱</view>
+						<text class="setting-text" style="color: #999;" v-if="userEmail">已设置</text>
+						<text class="setting-text" v-else @click="toEmailPage">去设置</text>
+					</view>
 				</view>
-			</view>
-			<view class="step-tips card">
-				<view class="icon-image"></view>
-				<view class="subscribe-right">
-					<view>开启订阅</view>
-					<view @click="clickSwitch">
-						<switch class="switch-btn" :disabled="!userEmail" :checked="status" color="rgb(4, 190, 2)" @change="switchChange" />
+				<view class="step-tips card">
+					<view class="icon-image"></view>
+					<view class="subscribe-right">
+						<view>开启订阅</view>
+						<view @click="clickSwitch">
+							<switch class="switch-btn" :disabled="!userEmail" :checked="status" color="rgb(4, 190, 2)" @change="switchChange" />
+						</view>
 					</view>
 				</view>
 			</view>
-		</view>
-		<view class="price card" v-if="newData.y98">
-			<view class="number-wrap">
-				<text class="number number-hash">
-					<text>98</text>
-					<text class="number-icon">#</text>
-				</text>
-				<text>汽油</text>
+			<view class="price card" v-if="newData.y98">
+				<view class="number-wrap">
+					<text class="number number-hash">
+						<text>98</text>
+						<text class="number-icon">#</text>
+					</text>
+					<text>汽油</text>
+				</view>
+				<view>
+					<text class="derta" v-if="!isNaN(Number(newData.derta98))"
+						:style="{ color: newData.derta98 > 0 ? 'rgb(235, 68, 54)' : (newData.derta98 < 0 ? 'rgb(14, 157, 88)' : '#222') }">
+						{{ newData.derta98 }}
+					</text>
+					<text class="number">{{ newData.y98 }}</text>
+					<text class="unit">元/升</text>
+				</view>
 			</view>
-			<view>
-				<text class="derta" v-if="!isNaN(Number(newData.derta98))"
-					:style="{ color: newData.derta98 > 0 ? 'rgb(235, 68, 54)' : (newData.derta98 < 0 ? 'rgb(14, 157, 88)' : '#222') }">
-					{{ newData.derta98 }}
-				</text>
-				<text class="number">{{ newData.y98 }}</text>
-				<text class="unit">元/升</text>
+			<view class="price card" v-if="newData.y95">
+				<view class="number-wrap">
+					<text class="number number-hash">
+						<text>95</text>
+						<text class="number-icon">#</text>
+					</text>
+					<text>汽油</text>
+				</view>
+				<view>
+					<text class="derta" v-if="!isNaN(Number(newData.derta95))"
+						:style="{ color: newData.derta95 > 0 ? 'rgb(235, 68, 54)' : (newData.derta95 < 0 ? 'rgb(14, 157, 88)' : '#222') }">
+						{{ newData.derta95 }}
+					</text>
+					<text class="number">{{ newData.y95 }}</text>
+					<text class="unit">元/升</text>
+				</view>
 			</view>
-		</view>
-		<view class="price card" v-if="newData.y95">
-			<view class="number-wrap">
-				<text class="number number-hash">
-					<text>95</text>
-					<text class="number-icon">#</text>
-				</text>
-				<text>汽油</text>
+			<view class="price card" v-if="newData.y92">
+				<view class="number-wrap">
+					<text class="number number-hash">
+						<text>92</text>
+						<text class="number-icon">#</text>
+					</text>
+					<text>汽油</text>
+				</view>
+				<view>
+					<text class="derta" v-if="!isNaN(Number(newData.derta92))"
+						:style="{ color: newData.derta92 > 0 ? 'rgb(235, 68, 54)' : (newData.derta92 < 0 ? 'rgb(14, 157, 88)' : '#222') }">
+						{{ newData.derta92 }}
+					</text>
+					<text class="number">{{ newData.y92 }}</text>
+					<text class="unit">元/升</text>
+				</view>
 			</view>
-			<view>
-				<text class="derta" v-if="!isNaN(Number(newData.derta95))"
-					:style="{ color: newData.derta95 > 0 ? 'rgb(235, 68, 54)' : (newData.derta95 < 0 ? 'rgb(14, 157, 88)' : '#222') }">
-					{{ newData.derta95 }}
-				</text>
-				<text class="number">{{ newData.y95 }}</text>
-				<text class="unit">元/升</text>
+			<view class="chart95 card" @touchmove.stop>
+				<view class="area" v-if="newData.area">{{ newData.area }}</view>
+				<l-echart ref="chartRef"></l-echart>
 			</view>
-		</view>
-		<view class="price card" v-if="newData.y92">
-			<view class="number-wrap">
-				<text class="number number-hash">
-					<text>92</text>
-					<text class="number-icon">#</text>
-				</text>
-				<text>汽油</text>
+			<view class="time-wrap broder-card">
+				<view class="text-wrap" v-if="nextPubDay"><view>下次调价日期：</view><text class="time-value">{{ nextPubDay }}</text></view>
+				<view class="text-wrap" v-if="newData.date"><view>上次调价时间：</view><text class="time-value">{{ newData.date }}</text></view>
+				<view class="tips" style="padding: 2px 0 0 0;">*实际生效时间为 {{ nextDay }}*</view>
 			</view>
-			<view>
-				<text class="derta" v-if="!isNaN(Number(newData.derta92))"
-					:style="{ color: newData.derta92 > 0 ? 'rgb(235, 68, 54)' : (newData.derta92 < 0 ? 'rgb(14, 157, 88)' : '#222') }">
-					{{ newData.derta92 }}
-				</text>
-				<text class="number">{{ newData.y92 }}</text>
-				<text class="unit">元/升</text>
-			</view>
+			<view class="tips">*数据为计算结果，与实际油价可能存在偏差，请以实际价格为准*</view>
+
+			<canvas class="oil-info" id="OilInfo" canvas-id="OilInfo"></canvas>
 		</view>
-		<view class="chart95 card" @touchmove.stop>
-			<view class="area" v-if="newData.area">{{ newData.area }}</view>
-			<l-echart ref="chartRef"></l-echart>
-		</view>
-		<view class="time-wrap broder-card">
-			<view class="text-wrap" v-if="nextPubDay"><view>下次调价日期：</view><text class="time-value">{{ nextPubDay }}</text></view>
-			<view class="text-wrap" v-if="newData.date"><view>上次调价时间：</view><text class="time-value">{{ newData.date }}</text></view>
-			<view class="tips" style="padding: 0;">实际生效时间为 {{ nextDay }}</view>
-		</view>
-		<view class="tips">*数据为计算结果，与实际油价可能存在偏差，请以实际价格为准*</view>
 	</view>
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, getCurrentInstance } from 'vue'
 import { useStore } from 'vuex'
 import { updateSubscribe95, getAllOilList, getOilDate } from '@/request.api/index.js'
 import { getLineOption } from './option'
 import { dateFormat } from '@/utils/umob.js'
+import { canvasToImage } from '@/utils/index.js'
+import { onShareAppMessage } from '@dcloudio/uni-app'
 
 // #ifdef MP-WEIXIN
 const echarts = require('../../../uni_modules/lime-echart/static/echarts.min')
@@ -103,6 +109,7 @@ const store = new useStore()
 
 const basePrice = [9465, 8.035, 7.555, 9.5247] // ave
 
+const drawImgUrl = ref('')
 const nextPubDay = ref('')
 const status = ref(false)
 const chartRef = ref(null)
@@ -120,7 +127,8 @@ const newData = ref({
 const userEmail = computed(() => store.state.app.USER_INFO.email || '')
 const remoteStatus = computed(() => store.state.app.USER_INFO.subscribe95 || 0)
 const nextDay = computed(() => {
-	const timestamp = new Date(newData.value.date).getTime() + 24 * 60 * 60 * 1000
+	const iosDate = newData.value.date.replaceAll('-', '/')
+	const timestamp = new Date(iosDate).getTime() + 24 * 60 * 60 * 1000
 	if (!isNaN(timestamp)) {
 		return `${dateFormat(timestamp)} 00:00:00`
 	}
@@ -139,11 +147,12 @@ const renderOilPrice = async () => {
 	    x: [],
 	}
 	if (success) {
-		echartLists.y98 = data.map(item => (item.qy / basePrice[0] * basePrice[3]).toFixed(2))
-		echartLists.y95 = data.map(item => (item.qy / basePrice[0] * basePrice[1]).toFixed(2))
-		echartLists.y92 = data.map(item => (item.qy / basePrice[0] * basePrice[2]).toFixed(2))
+		echartLists.y98 = data.map(item => item.o98 || (item.qy / basePrice[0] * basePrice[3]).toFixed(2))
+		echartLists.y95 = data.map(item => item.o95 || (item.qy / basePrice[0] * basePrice[1]).toFixed(2))
+		echartLists.y92 = data.map(item => item.o92 || (item.qy / basePrice[0] * basePrice[2]).toFixed(2))
 		echartLists.x = data.map(item => {
-			const timestamp = new Date(item.date).getTime() + 24 * 60 * 60 * 1000
+			const iosDate = item.date.replaceAll('-', '/')
+			const timestamp = new Date(iosDate).getTime() + 24 * 60 * 60 * 1000
 			return dateFormat(timestamp)
 		})
 		const length = data.length
@@ -203,6 +212,79 @@ const clickSwitch = () => {
 	}
 }
 
+const drawCanvas = () => {
+	return new Promise(resolve => {
+		const lineGap = 90
+		const context = uni.createCanvasContext('OilInfo')
+
+		context.setFontSize(16)
+		context.setFillStyle('#8e8e8e')
+		context.setTextAlign('left')
+		context.fillText(dateFormat(nextDay.value), 13, 35, 395)
+		context.fillText(newData.value.area, 333, 35, 395)
+		context.stroke()
+
+		drawLine('98', { value1: newData.value.y98, value2: newData.value.derta98 }, context, lineGap * 0)
+		drawLine('95', { value1: newData.value.y95, value2: newData.value.derta95 }, context, lineGap * 1)
+		drawLine('92', { value1: newData.value.y92, value2: newData.value.derta92 }, context, lineGap * 2)
+		context.draw(false, () => {
+			resolve()
+		})
+	})
+}
+
+const drawLine = (label, data, context, y) => {
+	const top = 95
+	const left = 12
+	const right = 395 - left
+	y = y + top
+	context.setStrokeStyle('#e4e7ed')
+	context.setFillStyle('#fff')
+	context.setLineWidth(1)
+	context.setShadow(0, 2, 12, 'rgba(0, 0, 0, 0.1)')
+	context.strokeRect(left, y - 43, right - left, 66)
+	context.fillRect(left, y - 43, right - left, 66)
+	context.stroke()
+
+	context.setFontSize(18)
+	context.setFillStyle('#222')
+	context.setTextAlign('left')
+	context.fillText('汽油', left + 75, y - 2, 395)
+	context.stroke()
+	context.setFontSize(12)
+	context.setFillStyle('#222')
+	context.setTextAlign('left')
+	context.fillText('#', left + 52, y - 14, 395)
+	context.stroke()
+	context.setFontSize(30)
+	context.setFillStyle('#222')
+	context.setTextAlign('left')
+	context.fillText(label, left + 17, y, 395)
+	context.fillText(data.value1, right - 120, y, 395)
+	context.stroke()
+	context.setFontSize(18)
+	context.setFillStyle('#999')
+	context.setTextAlign('left')
+	context.fillText('元/升', right - 54, y - 2, 395)
+	context.stroke()
+	context.setFontSize(14)
+	const color = data.value2 > 0 ? 'rgb(235, 68, 54)' : (data.value2 < 0 ? 'rgb(14, 157, 88)' : '#222')
+	context.setFillStyle(color)
+	context.setTextAlign('left')
+	context.fillText(data.value2, right - 162, y, 395)
+	context.stroke()
+}
+
+const drawImage = async () => {
+	await drawCanvas()
+	const res = await canvasToImage('OilInfo')
+	if (res.success) {
+		drawImgUrl.value = res.data
+	} else {
+		ElMessage.success(res.msg)
+	}
+}
+
 watch(remoteStatus, (value) => {
 	if (value) {
 		status.value = !!remoteStatus.value
@@ -213,6 +295,31 @@ onMounted(async () => {
 	status.value = !!remoteStatus.value
 	await renderOilPrice()
 	getNextDate()
+
+	// #ifdef MP-WEIXIN
+	drawImage()
+	// #endif
+})
+
+if (uni.setBackgroundColor) {
+	uni.setBackgroundColor({
+	    backgroundColorTop: '#2e9efb',
+		backgroundColorBottom: '#ffffff',
+	})
+}
+
+onShareAppMessage(() => {
+	const pages = getCurrentPages()
+	const currentPage = pages[pages.length - 1]
+	const { route } = currentPage || {}
+	const { proxy } = getCurrentInstance()
+	const value = Math.round(newData.value.derta95 * 50)
+
+	proxy.setShareInfo({
+		title: value === 0 ? '本次油价调整无变动' : `对比上次油价，每50升油${value > 0 ? '需多花费' : '可节省'}${Math.abs(value)}元`,
+		imageUrl: drawImgUrl.value,
+		path: route,
+	})
 })
 
 </script>
@@ -220,7 +327,7 @@ onMounted(async () => {
 <style lang="scss">
 page {
 	height: 100%;
-	background: linear-gradient(180deg, #1994fb, #fff 70%);
+	background: #2e9efb;
 }
 </style>
 
@@ -238,9 +345,15 @@ page {
 }
 
 .subscribe-wrap {
-	height: calc(100% - 44px);
+	display: flex;
+	height: 100%;
+	flex-direction: column;
+}
+.subscribe-body {
 	overflow-y: scroll;
 	padding: 0 $page-padding;
+	flex: 1;
+	background: linear-gradient(180deg, #2e9efb, #fff 70%);
 }
 .step-wrap {
 	display: flex;
@@ -373,5 +486,14 @@ page {
 	font-size: 12px;
 	color: #c0c4d6;
 	padding-bottom: 24px;
+}
+.oil-info {
+	width: 395px;
+	height: 316px;
+	position: fixed;
+	z-index: -99999;
+	opacity: 0;
+	visibility: hidden;
+	left: -400px;
 }
 </style>
