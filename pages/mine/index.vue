@@ -24,7 +24,9 @@
 					<view class="card-user-time" v-else-if="isProExpire">此账户未开通邮件通知功能</view>
 					<view class="card-user-time" v-else-if="USER_INFO.proTime">邮件通知将于 {{USER_INFO.proTime.slice(0, 10)}} 到期</view>
 					<view class="card-user-time" v-else>邮件通知将于9999-12-31到期</view>
-					<view class="card-user-tips" v-if="isProExpire">安装电脑端，联系我们开启邮件通知 <uni-icons color="#999" type="right" size="12"></uni-icons></view>
+
+					<view class="card-user-tips" v-if="!isLogin">赶快前往登录，体验新功能吧 <uni-icons color="#999" type="right" size="12"></uni-icons></view>
+					<view class="card-user-tips" v-else-if="isProExpire">安装电脑端，联系我们开启邮件通知 <uni-icons color="#999" type="right" size="12"></uni-icons></view>
 					<view class="card-user-tips" v-else>安装电脑端，开启邮件通知以及更多功能 <uni-icons color="#999" type="right" size="12"></uni-icons></view>
 				</view>
 				<view class="pro-btn">
@@ -50,10 +52,17 @@
 				</uni-list>
 			</view>
 		</view>
-        <button v-if="isLogin" type="buy" @click="logout">退出登录</button>
+        <button v-if="isLogin" style="margin-bottom: 24px;" type="buy" @click="logout">退出登录</button>
 		<view class="bottom-text">
-			<text>{{ versionStr }}</text>
+			<text style="color: #628dd1;" @click="showReachMe = true">关于我们</text>
+			<text class="text-line">|</text>
+			<text style="color: #628dd1;" @click="setClipboardData">网页端</text>
+			<text class="text-line">|</text>
+			<text>{{ versionStr || '1.0.0' }}</text>
 		</view>
+		<ux-dialog v-model="showReachMe">
+			<ReachMe></ReachMe>
+		</ux-dialog>
 	</view>
 </template>
 
@@ -62,9 +71,11 @@ import { ref, computed, nextTick, onMounted } from 'vue'
 import { useStore } from 'vuex'
 import { baseUrl } from '@/request.api/index.js'
 import base64 from '@/config/base64.js'
+import ReachMe from './sub-pages/reach-me.vue'
 
 const store = new useStore()
 
+const showReachMe = ref(false)
 const versionStr = ref('')
 
 const isProExpire = computed(() => store.getters['app/isProExpire'])
@@ -74,13 +85,7 @@ const USER_INFO = computed(() => store.state.app.USER_INFO)
 const avatarImg = computed(() => {
 	const { avatar } = USER_INFO.value
 	if (avatar) {
-		// #ifdef MP-WEIXIN
 		return baseUrl + avatar
-		// #endif
-		
-		// #ifndef MP-WEIXIN
-		return avatar
-		// #endif
 	}
 
 	return ''
@@ -107,11 +112,11 @@ const logout = () => {
 	logoutImmAction()
 }
 
-const setClipboardData = (value) => {
+const setClipboardData = () => {
 	uni.setClipboardData({
-		data: value,
+		data: 'https://www.mobbbb.top/future/',
 		success: function () {
-			ElMessage.success('内容已复制')
+			ElMessage.success('链接已复制')
 		}
 	})
 }
@@ -169,27 +174,12 @@ page {
 .bottom-text {
 	text-align: center;
 	font-size: 12px;
-	margin-top: 24px;
+	margin: 0 0 24px 0;
 	color: #a3a3a3;
-}
-.dialog-wrap {
-	font-size: 12px;
-	line-height: 20px;
-}
-.dialog-title {
-	margin-left: 8px;
-	padding-bottom: 2px;
-}
-.dialog-title:active {
-	color: #a1a1a1;
-}
-.dialog-item {
-	display: flex;
-	align-items: center;
 }
 .mine-card-wrap {
 	position: relative;
-	height: 337px;
+	margin-bottom: 24px;
 }
 .insert-card-wrap {
 	height: 80px;
@@ -205,11 +195,11 @@ page {
 	justify-content: space-between;
 }
 .mine-card-wrap .ux-card {
-	position: absolute;
 	width: 100%;
 	border-radius: 16px;
 	overflow: hidden;
 	top: 65px;
+	margin-top: -15px;
 }
 .card-user-time {
 	color: #eaeaea;
@@ -244,5 +234,11 @@ page {
 	text-overflow: ellipsis;
 	white-space: nowrap;
 	cursor: pointer;
+}
+.text-line {
+	transform: scaleY(0.8);
+	display: inline-block;
+	color: #d9d9d9;
+	margin: 0 12px;
 }
 </style>

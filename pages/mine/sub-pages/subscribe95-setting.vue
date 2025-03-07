@@ -78,7 +78,7 @@
 			</view>
 			<view class="time-wrap broder-card">
 				<view class="text-wrap" v-if="nextPubDay"><view>下次调价日期：</view><text class="time-value">{{ nextPubDay }}</text></view>
-				<view class="text-wrap" v-if="newData.date"><view>上次调价时间：</view><text class="time-value">{{ newData.date }}</text></view>
+				<view class="text-wrap" v-if="newData.date"><view>上次调价时间：</view><text class="time-value">{{ newData.date.indexOf('09:00:00') > -1 ? newData.createTime : newData.date }}</text></view>
 				<view class="tips" style="padding: 2px 0 0 0;">*实际生效时间为 {{ nextDay }}*</view>
 			</view>
 			<view class="tips">*数据为计算结果，与实际油价可能存在偏差，请以实际价格为准*</view>
@@ -113,11 +113,12 @@ const drawImgUrl = ref('')
 const nextPubDay = ref('')
 const status = ref(false)
 const chartRef = ref(null)
-const newData = ref({
+const newData = ref({ // 当前数据库最新数据
 	y98: 0,
 	y95: 0,
 	y92: 0,
 	date: '',
+	createTime: '',
 	area: '',
 	derta98: 0,
 	derta95: 0,
@@ -163,6 +164,7 @@ const renderOilPrice = async () => {
 		newData.value.derta95 = (newData.value.y95 - echartLists.y95[length - 2]).toFixed(2)
 		newData.value.derta92 = (newData.value.y92 - echartLists.y92[length - 2]).toFixed(2)
 		newData.value.date = data[length - 1].date
+		newData.value.createTime = dateFormat(new Date(data[length - 1].createTime), 'yyyy-MM-dd hh:mm:ss')
 		newData.value.area = data[0].area
 
 		echartLists.y98 = echartLists.y98.slice(length - 5, length)
@@ -186,6 +188,9 @@ const getNextDate = async () => {
 		// 今天不是公布日
 		oilDate = oilDate.filter(item => item > nowDate)
 		nextPubDay.value = oilDate[0] || ''
+	} else if (oilDate.includes(nowDate) && nowDate !== dateFormat(newData.value.date)) {
+		// 今天是公布日，且今天未公布
+		nextPubDay.value = `今天 (暂未公布)`
 	} else {
 		nextPubDay.value = nowDate
 	}
@@ -303,7 +308,7 @@ onMounted(async () => {
 
 if (uni.setBackgroundColor) {
 	uni.setBackgroundColor({
-	    backgroundColorTop: '#2e9efb',
+	    backgroundColorTop: '#2e9efc', // 不可与 css page -> background 值一样，否则将不生效
 		backgroundColorBottom: '#ffffff',
 	})
 }

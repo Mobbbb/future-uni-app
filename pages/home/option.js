@@ -594,7 +594,7 @@ export const getOrderLineOption = (data) => {
                 },
             },
             axisLine: {
-                show: true,
+                show: false,
                 lineStyle: {
                     color: '#d0d0d0',
                     width: 1,

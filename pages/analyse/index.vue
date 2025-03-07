@@ -16,7 +16,7 @@
                 </view>
                 <uni-card>
 					<view class="search-input-wrap">
-						<uni-datetime-picker @on-close="onClose" @show="onShow" type="daterange" v-model="basicDate" :clear-icon="false" @change="changeBasicDate" placeholder="请选择日期" />
+						<uni-datetime-picker @on-close="onClose" @show="onShowPicker" type="daterange" v-model="basicDate" :clear-icon="false" @change="changeBasicDate" placeholder="请选择日期" />
 					</view>
                     <view class="card-title">交易统计<span class="card-title-date">({{displayTime}})</span></view>
                     <view class="card-row-wrap">
@@ -195,7 +195,7 @@
                 <view class="analyse-calendar-header">
                     <view class="date-picker-wrap" v-if="dayCalendarShowStatus">
 						<view class="fit-parent pr-6" @click="changeCalendarDate(-1)"><ux-icon type="left" size="16"></ux-icon></view>
-						<ux-month-picker v-model="calendarDate" @on-close="onClose" @on-show="onShow" :clearIcon="false" @change="changeCalendarDate('')" placeholder="请选择日期"></ux-month-picker>
+						<ux-month-picker v-model="calendarDate" @on-close="onClose" @on-show="onShowPicker" :clearIcon="false" @change="changeCalendarDate('')" placeholder="请选择日期"></ux-month-picker>
 						<view class="fit-parent pl-6" @click="changeCalendarDate(1)"><ux-icon type="right" size="16"></ux-icon></view>
                     </view>
                     <view class="date-picker-wrap" v-else>
@@ -225,7 +225,7 @@
             <uni-card>
                 <view class="line-chart-filter-wrap">
 					<uni-data-select class="data-select mr-12" :clear="false" v-model="dayLineFutureNameBindValue" :localdata="futuresList"  @change="changeDayLineFuture"></uni-data-select>
-					<ux-month-picker v-model="kLineDate" @on-close="onClose" @on-show="onShow" :clearIcon="false" @change="changeKLineDate" placeholder="请选择日期"></ux-month-picker>
+					<ux-month-picker v-model="kLineDate" @on-close="onClose" @on-show="onShowPicker" :clearIcon="false" @change="changeKLineDate" placeholder="请选择日期"></ux-month-picker>
                 </view>
 				<view id="lineChart"><l-echart ref="lineChart"></l-echart></view>
             </uni-card>
@@ -606,7 +606,7 @@ const pullLoad = async (next) => {
 	await initAnalyseData()
 	next()
 }
-const onShow = () => {
+const onShowPicker = () => {
 	preventScrollAndPull.value = true
 }
 const onClose = () => {
@@ -616,13 +616,13 @@ const onClose = () => {
 // #ifdef H5
 let hasGotData = false
 onTabItemTap(() => {
-	if (!isLogin.value) {
-		hasGotData = false
-	} else if (!hasGotData) { // 已登录，未获取过图表
-		initBasicInfo()
-		initDayLineChart()
-		hasGotData = true
-	}
+	// if (!isLogin.value) {
+	// 	hasGotData = false
+	// } else if (!hasGotData) { // 已登录，未获取过图表
+	// 	initBasicInfo()
+	// 	initDayLineChart()
+	// 	hasGotData = true
+	// }
 })
 // #endif
 

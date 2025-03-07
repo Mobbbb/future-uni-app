@@ -1,32 +1,32 @@
 import HttpRequest from '@/utils/request.js'
 
 export const prefixApi = '/api/future'
+// export const prefixApi = '' // 微信测试环境
 
-export const baseUrl = 'https://www.mobbbb.top'
-
-let axios
 // #ifdef MP-WEIXIN
-axios = new HttpRequest(baseUrl)
+export const baseUrl = 'https://www.mobbbb.top'
+// export const baseUrl = 'http://127.0.0.1:3002' // 微信测试环境
 // #endif
 
 // #ifndef MP-WEIXIN
-axios = new HttpRequest()
+export const baseUrl = ''
 // #endif
 
+const axios = new HttpRequest(baseUrl)
 
-export const fetchUserLogin = (uid, password) => {
+export const fetchUserLogin = (uid, password, captcha) => {
     return axios.request({
         url: prefixApi + '/user/login',
         method: 'post',
-        data: { uid, password },
+        data: { uid, password, captcha },
     })
 }
 
-export const fetchUserRegister = (uid, password) => {
+export const fetchUserRegister = (uid, password, captcha) => {
     return axios.request({
         url: prefixApi + '/user/register',
         method: 'post',
-        data: { uid, password },
+        data: { uid, password, captcha },
     })
 }
 
@@ -264,6 +264,13 @@ export const fetchFutureFestivalInfo = (params) => {
 export const fetchAppVersion = () => {
     return axios.request({
         url: prefixApi + '/other/getNewAppVersion',
+        method: 'get',
+    })
+}
+
+export const fetchCaptcha = () => {
+    return axios.request({
+        url: prefixApi + '/common/captcha',
         method: 'get',
     })
 }

@@ -21,17 +21,10 @@
 			<view class="half-width reach-me" @click="showReachMe = true">
 				<text class="reach-me-text">联系我们</text>
 			</view>
-			<view class="half-width copy-btn" @click="setClipboardData(href, '链接已复制')">复制链接</view>
+			<view class="half-width copy-btn" @click="setClipboardData">复制链接</view>
 		</view>
 		<ux-dialog v-model="showReachMe">
-			<view class="dialog-wrap">
-				<view class="dialog-item mb-8" @click="setClipboardData('mobbbb.top@gmail.com', '邮箱已复制')">
-					<uni-icons type="email-filled" size="20" color="#606266"></uni-icons><text class="dialog-title">mobbbb.top@gmail.com</text>
-				</view>
-				<view class="dialog-item" @click="setClipboardData('_Silver_', '微信已复制')">
-					<uni-icons type="weixin" size="20" color="#606266"></uni-icons><text class="dialog-title">_Silver_</text>
-				</view>
-			</view>
+			<ReachMe></ReachMe>
 		</ux-dialog>
 	</view>
 </template>
@@ -40,6 +33,7 @@
 import { computed, onMounted, ref } from 'vue'
 import { useStore } from 'vuex'
 import { fetchAppVersion } from '@/request.api/index.js'
+import ReachMe from './reach-me.vue'
 
 const store = new useStore()
 
@@ -48,12 +42,12 @@ const showReachMe = ref(false)
 const futuresList = computed(() => store.getters['order/futuresList'])
 const commissionType = computed(() => store.state.app.USER_INFO.commissionType || 4)
 
-const setClipboardData = (value, msg) => {
-	if (value) {
+const setClipboardData = () => {
+	if (href.value) {
 		uni.setClipboardData({
-			data: value,
-			success: function () {
-				ElMessage.success(msg)
+			data: href.value,
+			success: function() {
+				ElMessage.success('链接已复制')
 			}
 		})
 	} else {
@@ -198,21 +192,5 @@ page {
 }
 .copy-btn:active {
 	background: linear-gradient(270deg,#b37957,#e0ba97);
-}
-
-.dialog-wrap {
-	font-size: 12px;
-	line-height: 20px;
-}
-.dialog-title {
-	margin-left: 8px;
-	padding-bottom: 2px;
-}
-.dialog-title:active {
-	color: #a1a1a1;
-}
-.dialog-item {
-	display: flex;
-	align-items: center;
 }
 </style>

@@ -15,14 +15,17 @@ export default defineConfig({
 	server: {
 		proxy: {
 			'/api': {
-				target: 'https://www.mobbbb.top', // 目标服务  
+				target: 'https://www.mobbbb.top', // 目标服务
 				changeOrigin: true,
-				// rewrite: path => path.replace(/^\/api/, ''),
 			},
+			// '/api/future': {
+			// 	target: 'http://127.0.0.1:3002', // 目标服务
+			// 	changeOrigin: true,
+			// 	rewrite: path => path.replace(/^\/api\/future/, ''),
+			// },
 			'/resource': {
-				target: 'https://www.mobbbb.top', // 目标服务  
+				target: 'https://www.mobbbb.top', // 目标服务
 				changeOrigin: true,
-				// rewrite: path => path.replace(/^\/api/, ''),
 			}
 		}
 	},

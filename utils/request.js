@@ -41,17 +41,24 @@ class HttpRequest {
 				header: options.header || {},
 				responseType: options.responseType || 'text',
 				success: (res) => {
-					const resData = res.data || {}
-					const cookies = res.cookies || []
-					const { data, success, msg, code } = resData
-					if (code === 403) {
-						ElMessage.error('登录已失效')
-						store.dispatch('app/logoutAction')
-					} else if (success === false) { // 服务器返回错误代码
-						ElMessage.error(msg)
+					if (typeof res.data === 'string') {
+						resolve({
+							data: res.data,
+							cookies: res.cookies || [],
+						})
+					} else {
+						const resData = res.data || {}
+						const cookies = res.cookies || []
+						const { data, success, msg, code } = resData
+						if (code === 403) {
+							ElMessage.error('登录已失效')
+							store.dispatch('app/logoutAction')
+						} else if (success === false) { // 服务器返回错误代码
+							ElMessage.error(msg)
+						}
+						resData.cookies = cookies
+						resolve(resData)
 					}
-					resData.cookies = cookies
-					resolve(resData)
 				},
 				fail: (res) => {
 					console.log(res)

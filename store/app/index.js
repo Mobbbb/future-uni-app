@@ -1,5 +1,6 @@
 import { fetchUserInfo, fetchListData } from '@/request.api/index.js'
 import { delCookie, getCookie, dateFormat } from '@/utils/umob.js'
+import { addWxCookie } from '@/utils'
 
 const app = {
     namespaced: true,
@@ -153,7 +154,7 @@ const app = {
 
 			// #ifdef MP-WEIXIN
 			uni.setStorageSync('future-uid', uid)
-			uni.setStorageSync('future-token', cookies.join(';'))
+			addWxCookie('future-token', cookies)
 			// #endif
 			
             if (loginList) {

@@ -12,10 +12,10 @@
 					label-position="left"
 					ref="ruleFormRef">
 					<uni-forms-item required label="交易日期" name="date">
-						<uni-datetime-picker @on-close="onClose" @show="onShow" type="datetime" :clear-icon="false" v-model="formData.date" placeholder="请选择日期" />
+						<uni-datetime-picker @on-close="onClose" @show="onShowPicker" type="datetime" :clear-icon="false" v-model="formData.date" placeholder="请选择日期" />
 					</uni-forms-item>
 					<uni-forms-item required label="合约" name="name">
-						<uni-data-picker @popupclosed="onClose" @popupopened="onShow" v-model="formData.name" :clear-icon="false" :localdata="futuresTree" popup-title="请选择合约" @change="selectOrderTree"></uni-data-picker>
+						<uni-data-picker @popupclosed="onClose" @popupopened="onShowPicker" v-model="formData.name" :clear-icon="false" :localdata="futuresTree" popup-title="请选择合约" @change="selectOrderTree"></uni-data-picker>
 					</uni-forms-item>
 					<uni-forms-item required label="成交价" name="price">
 						<uni-number-box v-model="formData.price" style="width: 180px;" placeholder="请输入成交价" ></uni-number-box>
@@ -218,9 +218,10 @@ const submitHandle = async (buyOrSale, openOrClose) => {
         const { success } = data
         if (success) {
             ElMessage.success('操作成功')
-            rerenderTable()
             formData.hands = 0
             formData.price = 0
+            await rerenderTable()
+			renderRowPrice(openingOrderList.value[0])
         }
     }
 }
@@ -296,7 +297,7 @@ const pullLoad = async (next) => {
 	await initOpeningAndRecentlyFeature()
 	next()
 }
-const onShow = () => {
+const onShowPicker = () => {
 	preventScrollAndPull.value = true
 }
 const onClose = () => {
@@ -400,6 +401,6 @@ onMounted(async () => {
 .home-chart {
 	height: 250px;
 	width: 100%;
-	padding: 16px 0 8px 0;
+	padding: 24px 0 8px 0;
 }
 </style>

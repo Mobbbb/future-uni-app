@@ -229,6 +229,53 @@ export const getMenuButtonBoundingClientRect = () => {
 	}
 }
 
+/**
+ * @description btoa
+ * @description 将字符串转换为 Base64 编码
+ */
+export function base64Encode(str) {
+	let CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/='
+	let out = '', i = 0, len = str.length, c1, c2, c3, enc1, enc2, enc3, enc4
+	while (i < len) {
+		c1 = str.charCodeAt(i++)
+		c2 = str.charCodeAt(i++)
+		c3 = str.charCodeAt(i++)
+		enc1 = c1 >> 2
+		enc2 = ((c1 & 3) << 4) | (c2 >> 4)
+		enc3 = ((c2 & 15) << 2) | (c3 >> 6)
+		enc4 = c3 & 63
+		if (isNaN(c2)) {
+			enc3 = enc4 = 64
+		} else if (isNaN(c3)) {
+			enc4 = 64
+		}
+		out += CHARS.charAt(enc1) + CHARS.charAt(enc2) + CHARS.charAt(enc3) + CHARS.charAt(enc4)
+	}
+	return out
+}
+
+export const addWxCookie = (key, cookies) => {
+	const newCookies = []
+	cookies.forEach(item => {
+		newCookies.push(item.split(';')[0])
+	})
+	const currentCookies = (uni.getStorageSync(key) || '').split(';')
+	
+	let resCookies = []
+	newCookies.forEach(item => {
+		resCookies.push(item)
+		const cookiePair = item.split('=')
+		for (let i = 0; i < currentCookies.length; i++) {
+			const cellCookiePair = currentCookies[i].split('=')
+			if (cookiePair[0].trim() === cellCookiePair[0].trim()) {
+				currentCookies.splice(i, 1)
+				break
+			}
+		}
+	})
+	resCookies = resCookies.concat(currentCookies)
+	uni.setStorageSync(key, resCookies.join(';'))
+}
 
 /**
  * @description Uni-App
