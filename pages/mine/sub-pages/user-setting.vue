@@ -2,7 +2,7 @@
 	<ux-nav>个人资料</ux-nav>
 	<view class="user-setting-config">
 		<view class="mine-top-wrap">
-			<view style="position: relative;">
+			<view class="avatar-img-wrap">
 				<img class="avatar-img" :src="avatarImg" v-if="avatarImg">
 				<view class="default-avatar-wrap" v-else>
 					<uni-icons color="#656565" type="person-filled" size="30"></uni-icons>
@@ -194,9 +194,14 @@ page {
 	padding: 24px 0;
 	background-color: white;
 }
-.avatar-img {
+.avatar-img-wrap {
 	width: 70px;
 	height: 70px;
+	position: relative;
+}
+.avatar-img {
+	width: 100%;
+	height: 100%;
 	border-radius: 70px;
 }
 .set-image {
@@ -212,8 +217,8 @@ page {
 	display: none;
 }
 .default-avatar-wrap {
-	width: 70px;
-	height: 70px;
+	width: 100%;
+	height: 100%;
 	border-radius: 70px;
 	background-color: #c9c9c9;
 	display: flex;

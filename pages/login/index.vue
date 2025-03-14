@@ -167,7 +167,9 @@ onMounted(async () => {
 		})
 	}
 	await getCaptcha() // 建立session
+	// #ifdef MP-WEIXIN
 	checkOpenId() // 在session之后检查
+	// #endif
 })
 </script>
 
