@@ -1,7 +1,7 @@
 <template>
 	<ux-nav :showBack="false" background="f5f6f7"></ux-nav>
 	<view class="mine-wrap">
-		<view class="mine-top-wrap" v-if="isLogin">
+		<view class="mine-top-wrap" v-if="isLogin" @click="toSettingPage">
 			<img class="avatar-img" :src="avatarImg" v-if="avatarImg">
 			<view class="default-avatar-wrap" v-else>
 				<uni-icons color="#656565" type="person-filled" size="30"></uni-icons>
@@ -23,7 +23,7 @@
 					<view class="card-user-time" v-if="!isLogin">您当前还未登录</view>
 					<view class="card-user-time" v-else-if="isProExpire">此账户未开通邮件通知功能</view>
 					<view class="card-user-time" v-else-if="USER_INFO.proTime">邮件通知将于 {{USER_INFO.proTime.slice(0, 10)}} 到期</view>
-					<view class="card-user-time" v-else>邮件通知将于9999-12-31到期</view>
+					<view class="card-user-time" v-else>邮件通知将于 9999-12-31 到期</view>
 
 					<view class="card-user-tips" v-if="!isLogin">赶快前往登录，体验新功能吧 <uni-icons color="#999" type="right" size="12"></uni-icons></view>
 					<view class="card-user-tips" v-else-if="isProExpire">安装电脑端，联系我们开启邮件通知 <uni-icons color="#999" type="right" size="12"></uni-icons></view>
@@ -69,7 +69,6 @@
 <script setup>
 import { ref, computed, nextTick, onMounted } from 'vue'
 import { useStore } from 'vuex'
-import { baseUrl } from '@/request.api/index.js'
 import base64 from '@/config/base64.js'
 import ReachMe from './sub-pages/reach-me.vue'
 
@@ -80,23 +79,15 @@ const versionStr = ref('')
 
 const isProExpire = computed(() => store.getters['app/isProExpire'])
 const isLogin = computed(() => store.getters['app/isLogin'])
+const avatarImg = computed(() => store.getters['app/avatarImg'])
 const USER_INFO = computed(() => store.state.app.USER_INFO)
 
-const avatarImg = computed(() => {
-	const { avatar } = USER_INFO.value
-	if (avatar) {
-		return baseUrl + avatar
-	}
-
-	return ''
-})
-
-const setLoginDrawerStatus = (status) => store.commit('app/setLoginDrawerStatus', status)
+const toLoginPage = () => store.commit('app/toLoginPage')
 const logoutImmAction = () => store.dispatch('app/logoutImmAction')
 
 const toGuidePage = () => {
 	if (!isLogin.value) {
-		setLoginDrawerStatus(true)
+		toLoginPage()
 		return
 	}
 	uni.navigateTo({
@@ -104,8 +95,14 @@ const toGuidePage = () => {
 	})
 }
 
+const toSettingPage = () => {
+	uni.navigateTo({
+		url: '/pages/mine/sub-pages/user-setting',
+	})
+}
+
 const login = () => {
-	setLoginDrawerStatus(true)
+	toLoginPage()
 }
 
 const logout = () => {
@@ -174,7 +171,7 @@ page {
 .bottom-text {
 	text-align: center;
 	font-size: 12px;
-	margin: 0 0 24px 0;
+	padding: 0 0 24px 0;
 	color: #a3a3a3;
 }
 .mine-card-wrap {
@@ -205,6 +202,7 @@ page {
 	color: #eaeaea;
 	font-size: 14px;
 	margin-bottom: 4px;
+	white-space: nowrap;
 }
 .card-user-tips {
 	color: #999;

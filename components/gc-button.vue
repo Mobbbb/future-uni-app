@@ -113,6 +113,17 @@ export default {
     background: #f23c3c;
 }
 
+.gc-button-wx {
+    border: 1px solid #1aad19;
+    color: white;
+    background: #1aad19;
+}
+.gc-button-wx:active {
+    border: 1px solid #179b16;
+    color: white;
+    background: #179b16;
+}
+
 .gc-button-active {
     background: #00a1d6;
     color: white!important; /* wx按钮颜色bug */

@@ -1,14 +1,21 @@
 import HttpRequest from '@/utils/request.js'
 
-export const prefixApi = '/api/future'
-// export const prefixApi = '' // 微信测试环境
-
 // #ifdef MP-WEIXIN
+/**
+ * @description 微信正式环境
+ */
+export const prefixApi = '/api/future'
 export const baseUrl = 'https://www.mobbbb.top'
-// export const baseUrl = 'http://127.0.0.1:3002' // 微信测试环境
+
+/**
+ * @description 微信测试环境
+ */
+// export const prefixApi = ''
+// export const baseUrl = 'http://127.0.0.1:3002'
 // #endif
 
 // #ifndef MP-WEIXIN
+export const prefixApi = '/api/future'
 export const baseUrl = ''
 // #endif
 
@@ -22,11 +29,19 @@ export const fetchUserLogin = (uid, password, captcha) => {
     })
 }
 
-export const fetchUserRegister = (uid, password, captcha) => {
+export const fetchLoginByCode = (code, provider) => {
+    return axios.request({
+        url: prefixApi + '/user/loginByCode',
+        method: 'post',
+        data: { code, provider },
+    })
+}
+
+export const fetchUserRegister = (uid, password, code, provider) => {
     return axios.request({
         url: prefixApi + '/user/register',
         method: 'post',
-        data: { uid, password, captcha },
+        data: { uid, password, code, provider },
     })
 }
 
@@ -34,6 +49,14 @@ export const fetchUserInfo = () => {
     return axios.request({
         url: prefixApi + '/user/info',
         method: 'get',
+    })
+}
+
+export const fetchCheckOpenId = (code, provider) => {
+    return axios.request({
+        url: prefixApi + '/user/checkOpenId',
+        method: 'post',
+        data: { code, provider },
     })
 }
 
@@ -50,6 +73,30 @@ export const updateUserEmail = (email) => {
         url: prefixApi + '/user/updateUserEmail',
         method: 'post',
         data: { email },
+    })
+}
+
+export const setOpenid = ({ code, provider }) => {
+    return axios.request({
+        url: prefixApi + '/user/setOpenid',
+        method: 'post',
+        data: { code, provider },
+    })
+}
+
+export const updateUserAvatar = (avatar) => {
+    return axios.request({
+        url: prefixApi + '/user/updateUserAvatar',
+        method: 'post',
+        data: { avatar },
+    })
+}
+
+export const updateUserInfo = ({ name, remark, commissionType }) => {
+    return axios.request({
+        url: prefixApi + '/user/updateUserInfo',
+        method: 'post',
+        data: { name, remark, commissionType },
     })
 }
 

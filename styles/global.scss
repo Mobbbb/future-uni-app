@@ -76,6 +76,25 @@ button[type='info'][disabled]:active {
 	background-color: $active-button-primary;
 }
 
+button[type='wx'] {
+	color: white;
+	background-color: $wx-green-color;
+}
+button[type='wx']:active {
+	color: $button-active-text;
+	background-color: $active-wx-green-color;
+}
+button[type='wx'][disabled] {
+	background-color: $disabled-wx-green-color;
+}
+button[type='wx'][disabled]:active {
+	background-color: $disabled-wx-green-color;
+}
+.button-hover[type='wx'] {
+	color: $button-active-text;
+	background-color: $active-wx-green-color;
+}
+
 ::-webkit-scrollbar {
     width: 0;
     height: 0;

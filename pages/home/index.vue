@@ -121,7 +121,7 @@ const futuresList = computed(() => store.getters['order/futuresList'])
 const isLogin = computed(() => store.getters['app/isLogin'])
 const openingOrderList = computed(() => store.state.order.openingOrderList)
 const openingOrderGroup = computed(() => store.state.order.openingOrderGroup)
-const setLoginDrawerStatus = (status) => store.commit('app/setLoginDrawerStatus', status)
+const toLoginPage = () => store.commit('app/toLoginPage')
 const resetOpeningOrderData = () => store.dispatch('order/resetOpeningOrderData')
 const getOpeningOrderData = () => store.dispatch('order/getOpeningOrderData')
 
@@ -206,7 +206,7 @@ const buySaleListNum = computed(() => {
  */
 const submitHandle = async (buyOrSale, openOrClose) => {
     if (!isLogin.value) {
-        setLoginDrawerStatus(true)
+        toLoginPage()
     } else {    
         const valid = await ruleFormRef.value.validate().catch(e => {})
         if (!valid) return

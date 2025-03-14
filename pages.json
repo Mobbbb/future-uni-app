@@ -39,6 +39,12 @@
 			"root": "pages/mine/sub-pages",
 			"pages": [
 				{
+					"path": "user-setting",
+					"style": {
+						"navigationStyle": "custom"
+					}
+				},
+				{
 					"path": "close-setting",
 					"style": {
 						"navigationStyle": "custom"

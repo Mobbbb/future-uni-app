@@ -328,3 +328,44 @@ export const canvasToImage = (canvasId) => {
 		}
 	})
 }
+
+/**
+ * @description Uni-App
+ */
+export const getLoginCode = async () => {
+	const provider = await new Promise(resolve => {
+		uni.getProvider({
+			service: 'oauth',
+			success: (res) => {
+				resolve(res.provider)
+			},
+			fail: () => {
+				resolve('')
+			},
+		})
+	})
+	
+	if (provider.includes('weixin')) {
+		const code = await new Promise(resolve => {
+			uni.login({
+				provider: 'weixin',
+				success: (res) => {
+					resolve(res.code)
+				},
+				fail: () => {
+					resolve('')
+				},
+			})
+		})
+
+		return {
+			code,
+			provider: 'weixin',
+		}
+	}
+
+	return {
+		code: '',
+		provider: '',
+	}
+}

@@ -1,4 +1,4 @@
-import { fetchUserInfo, fetchListData } from '@/request.api/index.js'
+import { fetchUserInfo, fetchListData, baseUrl } from '@/request.api/index.js'
 import { delCookie, getCookie, dateFormat } from '@/utils/umob.js'
 import { addWxCookie } from '@/utils'
 
@@ -54,6 +54,16 @@ const app = {
         isLogin(state) {
             return !!state.USER_INFO.userId
         },
+        avatarImg(state) {
+            const avatar = state.USER_INFO.avatar || ''
+            if (avatar.indexOf('http') > -1) {
+            	return avatar
+            } else if (avatar) {
+				return baseUrl + avatar
+			}
+            
+            return ''
+        },
 		isProExpire(state) {
             if (state.USER_INFO.proTime) {
                 return state.USER_INFO.proTime < dateFormat(new Date(), 'yyyy-MM-dd hh:mm:ss')
@@ -92,12 +102,10 @@ const app = {
         updateActiveNavIndex(state, value) {
             state.activeNavIndex = value
         },
-        setLoginDrawerStatus(state, value) {
-			if (value) {
-				uni.navigateTo({
-					url: '/pages/login/index',
-				})
-			}
+        toLoginPage(state, value) {
+			uni.navigateTo({
+				url: '/pages/login/index',
+			})
         },
         setCloseSettingShowStatus(state, value) {
             state.closeSettingShowStatus = value
